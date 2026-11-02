@@ -1,8 +1,4 @@
-# ADR-001 : choix MySQL comme base de données
-
-## Statut
-
-Proposé (à compléter).
+# ADR-001 : choix de MySQL comme base de données
 
 ## Contexte
 
@@ -12,8 +8,21 @@ Nous devons choisir un système de gestion de base de données adapté à ces be
 
 ## Décision
 
-À compléter.
+Nous avons décidé d'utiliser MySQL comme système de gestion de base de données.
 
 ## Conséquences
 
-À compléter.
+Positives :
+
+- Garantit la cohérence des données.
+- Permet de gérer des relations complexes.
+- Offre des transactions fiables.
+
+Négatives :
+
+- Nécessite une administration spécifique.
+- Implique de maîtriser la modélisation relationnelle.
+
+## Statut
+
+Décision validée et applicable à l'architecture du projet.
