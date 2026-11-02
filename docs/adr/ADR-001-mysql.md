@@ -1,4 +1,4 @@
-# ADR-001 : choix SQL comme base de données
+# ADR-001 : choix MySQL comme base de données
 
 ## Contexte
 
@@ -8,7 +8,7 @@ Nous devons choisir un système de gestion de base de données adapté à ces be
 
 ## Décision
 
-Nous avons décidé d'utiliser SQL comme langage de base de données.
+Nous avons décidé d'utiliser MySQL comme système de gestion de base de données.
 
 ## Conséquences
 
