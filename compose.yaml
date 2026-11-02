@@ -2,11 +2,16 @@
 # Lancer : docker compose up -d --build, puis http://localhost:8000
 services:
   php:
-    build: ./docker/php
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
     ports:
       - "127.0.0.1:${HTTP_PORT:-8000}:80"
     volumes:
-      - .:/var/www/html
+      # Symfony est dans l'image ; on branche seulement le code qu'on modifie
+      - ./src:/var/www/html/src
+      - ./templates:/var/www/html/templates
+      - ./config:/var/www/html/config
     depends_on:
       database:
         condition: service_healthy

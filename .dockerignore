@@ -1,0 +1,8 @@
+.git
+vendor
+var
+docs
+.env.local
+.env.*.local
+compose.yaml
+docker/php/Dockerfile

@@ -22,11 +22,14 @@ docker compose up -d --build
 - Mailpit, les mails envoyés par l'appli : http://localhost:8025
 - MySQL : port 3307 de la machine, base `shopflow`, utilisateur `app` / `app` (mots de passe de dev)
 
-Le premier lancement installe les dépendances PHP dans le conteneur, ça prend une minute. Ensuite :
+Symfony et ses dépendances (`vendor/`) sont installés dans l'image Docker au moment du `--build`. Les dossiers `src/`, `templates/` et `config/` sont branchés sur vos fichiers : une modif dans l'éditeur se voit tout de suite, sans reconstruire. Après un `composer require`, relancez `docker compose up -d --build`.
+
+Toujours lancer les commandes Symfony et Composer dans le conteneur, jamais sur sa machine :
 
 ```bash
 docker compose exec php php bin/console about     # infos Symfony
 docker compose exec php php bin/console make:entity  # créer une entité
+docker compose exec php composer require <paquet>   # ajouter un paquet
 docker compose down                               # tout arrêter (la base est gardée)
 ```
 

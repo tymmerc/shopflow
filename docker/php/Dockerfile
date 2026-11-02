@@ -7,10 +7,16 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-COPY vhost.conf /etc/apache2/sites-available/000-default.conf
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY docker/php/vhost.conf /etc/apache2/sites-available/000-default.conf
 
 WORKDIR /var/www/html
-ENTRYPOINT ["entrypoint.sh"]
-CMD ["apache2-foreground"]
+
+# Dépendances d'abord : cette couche reste en cache tant que composer.json/lock ne bougent pas
+COPY composer.json composer.lock symfony.lock ./
+RUN composer install --no-interaction --prefer-dist --no-scripts --no-autoloader
+
+# Puis le code de l'appli Symfony
+COPY . .
+RUN composer dump-autoload --optimize \
+    && composer run-script auto-scripts \
+    && mkdir -p var && chown -R www-data:www-data var
