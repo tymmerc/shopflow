@@ -45,3 +45,7 @@ Stack : Symfony 7.4 (webapp), PHP 8.3 + Apache, MySQL 8.4, Mailpit. Déploiement
 - Source des schémas, à ouvrir avec draw.io : [docs/c4/shopflow-c4.drawio](docs/c4/shopflow-c4.drawio)
 - [ADR-001 : choix de MySQL comme base de données](docs/adr/ADR-001-mysql.md)
 - [ADR-002 : API REST JSON en PHP Symfony](docs/adr/ADR-002-api-rest-json.md)
+
+## Jalon 2 : bounded contexts et modules
+
+- [Context map](docs/ddd/context-map.png) (source draw.io : [docs/ddd/context-map.drawio](docs/ddd/context-map.drawio))
