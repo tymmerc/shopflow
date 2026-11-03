@@ -19,4 +19,5 @@ RUN composer install --no-interaction --prefer-dist --no-scripts --no-autoloader
 COPY . .
 RUN composer dump-autoload --optimize \
     && composer run-script auto-scripts \
+    && php bin/console tailwind:build --minify \
     && mkdir -p var && chown -R www-data:www-data var
