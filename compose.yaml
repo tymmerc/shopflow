@@ -12,6 +12,7 @@ services:
       # Symfony est dans l'image ; on branche seulement le code qu'on modifie
       - ./src:/var/www/html/src
       - ./templates:/var/www/html/templates
+      - ./assets:/var/www/html/assets
       - ./config:/var/www/html/config
       - ./migrations:/var/www/html/migrations
       # Pour qu'un composer require dans le conteneur reste dans le dépôt
@@ -19,10 +20,26 @@ services:
       - ./composer.lock:/var/www/html/composer.lock
       - ./symfony.lock:/var/www/html/symfony.lock
       - ./.env:/var/www/html/.env
+      # CSS compilée par le service tailwind (le binaire est déjà dans l'image)
+      - tailwind_build:/var/www/html/var/tailwind
     depends_on:
       database:
         condition: service_healthy
     mem_limit: 512m
+
+  # Recompile la CSS à chaque modification de assets/ ou templates/
+  tailwind:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    user: www-data
+    command: php bin/console tailwind:build --watch
+    volumes:
+      - ./templates:/var/www/html/templates
+      - ./assets:/var/www/html/assets
+      - ./config:/var/www/html/config
+      - tailwind_build:/var/www/html/var/tailwind
+    mem_limit: 256m
 
   database:
     image: mysql:8.4
@@ -67,3 +84,4 @@ services:
 
 volumes:
   database_data:
+  tailwind_build:
