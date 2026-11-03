@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
+
+{% block title %}{{ article.name }}{% endblock %}
+{% block meta_description %}{{ article.desc ?? article.name }}{% endblock %}
+
+{% block body %}
+{% set out = article.stock <= 0 %}
+<div class="mx-auto max-w-6xl px-4 py-8">
+
+    <nav aria-label="Fil d'Ariane" class="mb-6 flex items-center gap-1 text-[13px] text-fg-2">
+        <a href="{{ path('app_catalog') }}" class="btn btn-ghost btn-sm -ml-2">
+            {{ ui.icon('arrow-left', 16) }}
+            Catalogue
+        </a>
+        <span class="text-muted">{{ ui.icon('chevron-right', 16) }}</span>
+        <span class="truncate text-fg" aria-current="page">{{ article.name }}</span>
+    </nav>
+
+    <div class="grid gap-8 md:grid-cols-2">
+        <div class="panel grid aspect-square place-items-center overflow-hidden bg-subtle text-muted">
+            {% if article.img %}
+                <img src="{{ article.img }}" alt="{{ article.name }}" class="size-full object-cover">
+            {% else %}
+                <div class="flex flex-col items-center gap-2">
+                    {{ ui.icon('package', 40) }}
+                    <span class="text-[13px]">Aucune photo pour cet article</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="flex flex-col gap-6"
+             data-controller="add-to-cart"
+             data-add-to-cart-id-value="{{ article.id }}"
+             data-add-to-cart-name-value="{{ article.name }}"
+             data-add-to-cart-price-value="{{ article.price }}"
+             data-add-to-cart-stock-value="{{ article.stock }}"
+             data-add-to-cart-url-value="{{ path('app_catalog_show', { id: article.id }) }}"
+             data-add-to-cart-cart-url-value="{{ path('app_cart') }}">
+            <div class="flex flex-col gap-3">
+                <h1 class="page-title text-[24px]">{{ article.name }}</h1>
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="tnum text-[24px] font-semibold">{{ article.price|number_format(2, ',', ' ') }}&nbsp;€</span>
+                    {{ include('partials/_stock_badge.html.twig', { stock: article.stock }) }}
+                </div>
+                {% if article.desc %}
+                    <p class="max-w-[75ch] text-fg-2">{{ article.desc }}</p>
+                {% endif %}
+            </div>
+
+            <section class="flex flex-col gap-4">
+                <h2 class="section-label">Commande</h2>
+
+                <div class="flex flex-wrap items-end gap-3">
+                    <div data-controller="stepper">
+                        <label for="qty" class="field-label">Quantité</label>
+                        <div class="flex h-11 items-center rounded-md border border-line bg-surface">
+                            <span class="inline-flex">
+                                <button type="button" class="btn btn-ghost btn-icon h-[42px] w-11 rounded-r-none"
+                                        data-stepper-target="decrement" data-action="stepper#decrement"
+                                        aria-label="Diminuer la quantité" {% if out %}disabled{% endif %}>
+                                    {{ ui.icon('minus', 16) }}
+                                </button>
+                            </span>
+                            <input id="qty" type="number" inputmode="numeric" min="1" max="{{ max(article.stock, 1) }}" value="1"
+                                   class="tnum h-full w-14 border-x border-line bg-transparent text-center outline-none [appearance:textfield] focus-visible:shadow-[var(--focus-ring)] [&::-webkit-inner-spin-button]:appearance-none"
+                                   data-stepper-target="input" data-add-to-cart-target="quantity"
+                                   data-action="change->stepper#clamp"
+                                   {% if out %}disabled{% endif %}>
+                            <span class="inline-flex">
+                                <button type="button" class="btn btn-ghost btn-icon h-[42px] w-11 rounded-l-none"
+                                        data-stepper-target="increment" data-action="stepper#increment"
+                                        aria-label="Augmenter la quantité" {% if out %}disabled{% endif %}>
+                                    {{ ui.icon('plus', 16) }}
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+
+                    <span class="inline-flex flex-1" {% if out %}data-tooltip="Article en rupture de stock"{% endif %}>
+                        <button type="button" class="btn btn-primary btn-lg w-full min-w-[220px]"
+                                data-add-to-cart-target="button" data-action="add-to-cart#add"
+                                {% if out %}disabled{% endif %}>
+                            {{ ui.icon('cart', 20) }}
+                            <span data-add-to-cart-target="label">Ajouter au panier</span>
+                        </button>
+                    </span>
+                </div>
+
+                <p class="field-help font-mono tnum">RÉF. SF-{{ '%05d'|format(article.id) }} · {{ article.stock }} en stock</p>
+            </section>
+
+            <ul class="flex flex-col gap-3 border-t border-line pt-6 text-[13px] text-fg-2">
+                <li class="flex items-center gap-3">{{ ui.icon('shield-check', 20, 'text-fg') }} Paiement via un prestataire sécurisé</li>
+                <li class="flex items-center gap-3">{{ ui.icon('truck', 20, 'text-fg') }} Expédition suivie par transporteur</li>
+                <li class="flex items-center gap-3">{{ ui.icon('mail', 20, 'text-fg') }} Confirmation de commande par e-mail</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

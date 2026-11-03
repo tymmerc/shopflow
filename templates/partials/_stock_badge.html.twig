@@ -1,0 +1,9 @@
+{% import '_icons.html.twig' as ui %}
+{# État du stock : toujours icône + texte, jamais la couleur seule #}
+{% if stock <= 0 %}
+    <span class="badge badge-danger">{{ ui.icon('circle-alert', 14) }}Rupture de stock</span>
+{% elseif stock <= 5 %}
+    <span class="badge badge-warning tnum">{{ ui.icon('triangle-alert', 14) }}Plus que {{ stock }}</span>
+{% else %}
+    <span class="badge badge-success">{{ ui.icon('check', 14) }}En stock</span>
+{% endif %}

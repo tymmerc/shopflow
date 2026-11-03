@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
+
+{% set not_found = status_code == 404 %}
+
+{% block title %}{{ not_found ? 'Page introuvable' : 'Erreur' }}{% endblock %}
+
+{% block body %}
+<div class="mx-auto flex max-w-xl flex-col items-center gap-4 px-4 py-24 text-center">
+    <span class="text-muted">{{ ui.icon(not_found ? 'search-x' : 'triangle-alert', 40) }}</span>
+    <p class="font-mono text-[12px] tracking-[0.15em] text-fg-2">ERREUR {{ status_code }}</p>
+    <h1 class="page-title">
+        {{ not_found ? 'Cette page est introuvable' : 'Un problème est survenu' }}
+    </h1>
+    <p class="max-w-[50ch] text-fg-2">
+        {% if not_found %}
+            Le lien est peut-être incomplet, ou l'article a été retiré du catalogue.
+        {% else %}
+            La page n'a pas pu s'afficher. Réessayez dans un instant ; si le problème persiste, revenez à l'accueil.
+        {% endif %}
+    </p>
+    <div class="mt-2 flex flex-wrap justify-center gap-3">
+        {% if not_found %}
+            <a href="{{ path('app_catalog') }}" class="btn btn-primary">Parcourir le catalogue</a>
+            <a href="{{ path('app_home') }}" class="btn btn-secondary">Retour à l'accueil</a>
+        {% else %}
+            <a href="{{ app.request.requestUri }}" class="btn btn-primary">{{ ui.icon('rotate-ccw', 16) }} Réessayer</a>
+            <a href="{{ path('app_home') }}" class="btn btn-secondary">Retour à l'accueil</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

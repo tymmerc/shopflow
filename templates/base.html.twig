@@ -1,9 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Boutique{% endblock %} · ShopFlow</title>
+        <meta name="description" content="{% block meta_description %}Composants électroniques et kits robotiques.{% endblock %}">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%230A3A66%22/><text x=%2216%22 y=%2222%22 font-family=%22system-ui,sans-serif%22 font-size=%2217%22 font-weight=%22700%22 text-anchor=%22middle%22 fill=%22%23fff%22>S</text></svg>">
+
+        {# Thème appliqué avant le premier rendu pour éviter le flash clair/sombre #}
+        <script>
+            try {
+                var theme = JSON.parse(localStorage.getItem('shopflow.theme'));
+                if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+            } catch (e) {}
+        </script>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700&display=swap">
+
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {% endblock %}
@@ -19,7 +34,24 @@
         <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
         {% endif %}
     </head>
-    <body>
-        {% block body %}{% endblock %}
+    <body class="flex min-h-dvh flex-col" data-controller="shell" data-action="keydown@window->shell#onKey">
+        <a href="#contenu" class="btn btn-primary fixed left-4 top-2 z-50 -translate-y-16 focus:translate-y-0">
+            Aller au contenu
+        </a>
+
+        {{ include('partials/_navbar.html.twig') }}
+
+        <main id="contenu" tabindex="-1" class="flex-1 outline-none {% block main_class %}{% endblock %}">
+            {% block body %}{% endblock %}
+        </main>
+
+        {{ include('partials/_footer.html.twig') }}
+
+        {{ include('partials/_command_palette.html.twig') }}
+        {{ include('partials/_shortcuts.html.twig') }}
+
+        <div id="toasts" class="toast-region" data-turbo-permanent
+             data-controller="toast" data-action="toast:show@window->toast#show"
+             role="region" aria-label="Notifications" aria-live="polite"></div>
     </body>
 </html>
