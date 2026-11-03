@@ -1,0 +1,4 @@
+# Fichiers exécutés dans les conteneurs Linux : toujours en LF
+*.sh text eol=lf
+docker/** text eol=lf
+bin/console text eol=lf
