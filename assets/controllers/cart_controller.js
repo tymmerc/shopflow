@@ -12,17 +12,18 @@ export default class extends Controller {
     connect() {
         this.render = this.render.bind(this);
         window.addEventListener('cart:change', this.render);
-        window.addEventListener('storage', this.render);
         this.render();
-        if (this.hasLoadingTarget) this.loadingTarget.remove();
     }
 
     disconnect() {
         window.removeEventListener('cart:change', this.render);
-        window.removeEventListener('storage', this.render);
     }
 
     render() {
+        // Tant que le serveur n'a pas répondu, le squelette reste affiché (et pas « panier vide »)
+        if (!cart.isLoaded()) return;
+        if (this.hasLoadingTarget) this.loadingTarget.remove();
+
         const items = cart.items();
         const n = items.reduce((sum, i) => sum + i.qty, 0);
 
