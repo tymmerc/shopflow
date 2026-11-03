@@ -1,4 +1,4 @@
-# ADR-002 : choix d'une API REST JSON en PHP Symfony
+# ADR-002 : choix de PHP Symfony
 
 ## Contexte
 
@@ -8,20 +8,23 @@ Nous devons choisir un moyen de communication adapté entre le front et le back.
 
 ## Décision
 
-Nous avons décidé d'exposer une API REST en JSON avec Symfony.
+Nous avons décidé d'opter pour une architecture monolithique utilisant le framework Symfony avec un rendu côté serveur.
 
 ## Conséquences
 
-Positives :
+Positives
 
-- Sépare le front et le back.
-- Utilise un format standard et lisible.
-- Facilite les tests de l’application.
+- Un seul dépôt de code et un déploiement unifié pour le front et le back.
 
-Négatives :
+- Gestion simplifiée des sessions et des accès sans avoir à sécuriser des tokens d'API (JWT/Sanctum).
 
-- Nécessite de sécuriser l’API.
-- Implique de documenter chaque route.
+- Idéal pour un développement rapide sans surcoût d'architecture.
+
+Négatives
+
+- Le front-end et le back-end sont étroitement liés dans le même projet.
+
+- Moins flexible si l'on souhaite développer plus tard une application mobile ou un autre front-end séparé.
 
 ## Statut
 
