@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\CommandRepository;
+use App\Repository\OrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: CommandRepository::class)]
-class Command
+#[ORM\Entity(repositoryClass: OrderRepository::class)]
+#[ORM\Table(name: '`order`')]
+class Order
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -20,9 +21,9 @@ class Command
     private ?int $userId = null;
 
     /**
-     * @var Collection<int, CommandCatalog>
+     * @var Collection<int, OrderCatalog>
      */
-    #[ORM\OneToMany(targetEntity: CommandCatalog::class, mappedBy: 'command', cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: OrderCatalog::class, mappedBy: 'order', cascade: ['persist'], orphanRemoval: true)]
     private Collection $items;
 
     public function __construct()
@@ -48,27 +49,27 @@ class Command
     }
 
     /**
-     * @return Collection<int, CommandCatalog>
+     * @return Collection<int, OrderCatalog>
      */
     public function getItems(): Collection
     {
         return $this->items;
     }
 
-    public function addItem(CommandCatalog $item): static
+    public function addItem(OrderCatalog $item): static
     {
         if (!$this->items->contains($item)) {
             $this->items->add($item);
-            $item->setCommand($this);
+            $item->setOrder($this);
         }
 
         return $this;
     }
 
-    public function removeItem(CommandCatalog $item): static
+    public function removeItem(OrderCatalog $item): static
     {
-        if ($this->items->removeElement($item) && $item->getCommand() === $this) {
-            $item->setCommand(null);
+        if ($this->items->removeElement($item) && $item->getOrder() === $this) {
+            $item->setOrder(null);
         }
 
         return $this;

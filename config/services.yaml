@@ -19,5 +19,8 @@ services:
     App\:
         resource: '../src/'
 
+    App\Order\Application\Port\OrderRepository: '@App\Order\Infrastructure\Doctrine\DoctrineOrderRepository'
+    App\Order\Application\Port\PaymentGateway: '@App\Order\Infrastructure\Payment\PspGateway'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\CommandCatalog;
+use App\Entity\Order;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<CommandCatalog>
+ * @extends ServiceEntityRepository<Order>
  */
-class CommandCatalogRepository extends ServiceEntityRepository
+class OrderRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, CommandCatalog::class);
+        parent::__construct($registry, Order::class);
     }
 
 //    /**
-//     * @return CommandCatalog[] Returns an array of CommandCatalog objects
+//     * @return Order[] Returns an array of Order objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -31,7 +31,7 @@ class CommandCatalogRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?CommandCatalog
+//    public function findOneBySomeField($value): ?Order
 //    {
 //        return $this->createQueryBuilder('c')
 //            ->andWhere('c.exampleField = :val')

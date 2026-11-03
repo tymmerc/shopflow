@@ -17,10 +17,10 @@ deptrac:
       collectors:
         - type: directory
           value: src/Payment/.*
-    - name: Command
+    - name: Order
       collectors:
         - type: directory
-          value: src/Command/.*
+          value: src/Order/.*
     - name: Delivery
       collectors:
         - type: directory
