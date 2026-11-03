@@ -8,13 +8,11 @@ export default class extends Controller {
     connect() {
         this.render = this.render.bind(this);
         window.addEventListener('cart:change', this.render);
-        window.addEventListener('storage', this.render);
         this.render();
     }
 
     disconnect() {
         window.removeEventListener('cart:change', this.render);
-        window.removeEventListener('storage', this.render);
     }
 
     render() {

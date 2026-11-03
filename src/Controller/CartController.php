@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class CartController extends AbstractController
 {
-    // Le contenu du panier vit dans le navigateur tant que le contexte Cart n'existe pas côté serveur
+    // Page seule : le contenu est chargé par assets/lib/cart.js depuis CartApiController (/api/cart)
     #[Route('/cart', name: 'app_cart')]
     public function index(): Response
     {
