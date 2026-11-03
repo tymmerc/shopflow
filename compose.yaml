@@ -1,6 +1,4 @@
-# Environnement de dev ShopFlow : appli Symfony, MySQL, Adminer, Mailpit.
-# Lancer : docker compose up -d --build, puis http://localhost:8000
-# Adminer : http://localhost:8080 (serveur database, user app / mdp app)
+
 services:
   php:
     build:
@@ -9,23 +7,39 @@ services:
     ports:
       - "127.0.0.1:${HTTP_PORT:-8000}:80"
     volumes:
-      # Symfony est dans l'image ; on branche seulement le code qu'on modifie
+
       - ./src:/var/www/html/src
       - ./templates:/var/www/html/templates
       - ./assets:/var/www/html/assets
       - ./config:/var/www/html/config
       - ./migrations:/var/www/html/migrations
-      # Pour qu'un composer require dans le conteneur reste dans le dépôt
-      - ./composer.json:/var/www/html/composer.json
-      - ./composer.lock:/var/www/html/composer.lock
-      - ./symfony.lock:/var/www/html/symfony.lock
+
       - ./.env:/var/www/html/.env
-      # CSS compilée par le service tailwind (le binaire est déjà dans l'image)
+
       - tailwind_build:/var/www/html/var/tailwind
     depends_on:
       database:
         condition: service_healthy
     mem_limit: 512m
+
+  
+  worker:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    user: www-data
+    command: php bin/console messenger:consume async --time-limit=600 --memory-limit=128M -vv
+    restart: unless-stopped
+    volumes:
+      - ./src:/var/www/html/src
+      - ./config:/var/www/html/config
+      - ./.env:/var/www/html/.env
+    depends_on:
+      database:
+        condition: service_healthy
+      mailer:
+        condition: service_started
+    mem_limit: 256m
 
   # Recompile la CSS à chaque modification de assets/ ou templates/
   tailwind:
