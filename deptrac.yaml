@@ -5,48 +5,48 @@ deptrac:
     - '#.*test.*#'
 
   layers:
-    - name: Catalogue
+    - name: Catalog
       collectors:
         - type: directory
-          value: src/Catalogue/.*
-    - name: Panier
+          value: src/Catalog/.*
+    - name: Cart
       collectors:
         - type: directory
-          value: src/Panier/.*
-    - name: Paiement
+          value: src/Cart/.*
+    - name: Payment
       collectors:
         - type: directory
-          value: src/Paiement/.*
-    - name: Commande
+          value: src/Payment/.*
+    - name: Command
       collectors:
         - type: directory
-          value: src/Commande/.*
-    - name: Livraison
+          value: src/Command/.*
+    - name: Delivery
       collectors:
         - type: directory
-          value: src/Livraison/.*
+          value: src/Delivery/.*
     - name: Notification
       collectors:
         - type: directory
           value: src/Notification/.*
 
   ruleset:
-    Catalogue: []
+    Catalog: []
 
-    Panier:
-      - Catalogue
+    Cart:
+      - Catalog
 
-    Paiement:
-      - Panier
+    Payment:
+      - Cart
 
-    Commande:
-      - Catalogue
-      - Panier
-      - Paiement
+    Order:
+      - Catalog
+      - Cart
+      - Payment
 
-    Livraison:
-      - Commande
+    Delivery:
+      - Order
 
     Notification:
-      - Livraison
-      - Commande
+      - Delivery
+      - Order
