@@ -2,16 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\CommandCatalogRepository;
+use App\Repository\OrderCatalogRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * Une ligne de commande : un article du catalogue et sa quantité.
- */
-#[ORM\Entity(repositoryClass: CommandCatalogRepository::class)]
-#[ORM\UniqueConstraint(name: 'uniq_command_catalog', columns: ['command_id', 'catalog_id'])]
-class CommandCatalog
+#[ORM\Entity(repositoryClass: OrderCatalogRepository::class)]
+#[ORM\UniqueConstraint(name: 'uniq_order_catalog', columns: ['order_id', 'catalog_id'])]
+class OrderCatalog
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -20,7 +17,7 @@ class CommandCatalog
 
     #[ORM\ManyToOne(inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?Command $command = null;
+    private ?Order $order = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -37,14 +34,14 @@ class CommandCatalog
         return $this->id;
     }
 
-    public function getCommand(): ?Command
+    public function getOrder(): ?Order
     {
-        return $this->command;
+        return $this->order;
     }
 
-    public function setCommand(?Command $command): static
+    public function setOrder(?Order $order): static
     {
-        $this->command = $command;
+        $this->order = $order;
 
         return $this;
     }
