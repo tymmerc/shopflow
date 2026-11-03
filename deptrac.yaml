@@ -1,0 +1,52 @@
+deptrac:
+  paths:
+    - src
+  exclude_files:
+    - '#.*test.*#'
+
+  layers:
+    - name: Catalog
+      collectors:
+        - type: directory
+          value: src/Catalog/.*
+    - name: Cart
+      collectors:
+        - type: directory
+          value: src/Cart/.*
+    - name: Payment
+      collectors:
+        - type: directory
+          value: src/Payment/.*
+    - name: Command
+      collectors:
+        - type: directory
+          value: src/Command/.*
+    - name: Delivery
+      collectors:
+        - type: directory
+          value: src/Delivery/.*
+    - name: Notification
+      collectors:
+        - type: directory
+          value: src/Notification/.*
+
+  ruleset:
+    Catalog: []
+
+    Cart:
+      - Catalog
+
+    Payment:
+      - Cart
+
+    Order:
+      - Catalog
+      - Cart
+      - Payment
+
+    Delivery:
+      - Order
+
+    Notification:
+      - Delivery
+      - Order
