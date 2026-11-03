@@ -4,7 +4,7 @@ transports:
 async: '%env(MESSENGER_TRANSPORT_DSN)%'
 routing:
 'App\Command\Domain\Event\CommandPlaced': async
-        default_bus: messenger.bus.default
+        default_bus: "messenger.bus.default"
 
         buses:
             messenger.bus.default: []
