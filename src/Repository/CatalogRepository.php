@@ -16,6 +16,17 @@ class CatalogRepository extends ServiceEntityRepository
         parent::__construct($registry, Catalog::class);
     }
 
+    /**
+     * @return Catalog[]
+     */
+    public function findAllCatalogs(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->orderBy('c.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Catalog[] Returns an array of Catalog objects
     //     */
