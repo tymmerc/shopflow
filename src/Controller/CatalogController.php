@@ -14,7 +14,7 @@ final class CatalogController extends AbstractController
     public function index(CatalogRepository $catalogRepository): Response
     {
         return $this->render('catalog/index.html.twig', [
-            'articles' => $catalogRepository->findAllCatalogs(),
+            'articles' => $catalogRepository->findAll(),
         ]);
     }
 
