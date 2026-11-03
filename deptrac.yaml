@@ -1,0 +1,52 @@
+deptrac:
+  paths:
+    - src
+  exclude_files:
+    - '#.*test.*#'
+
+  layers:
+    - name: Catalogue
+      collectors:
+        - type: directory
+          value: src/Catalogue/.*
+    - name: Panier
+      collectors:
+        - type: directory
+          value: src/Panier/.*
+    - name: Paiement
+      collectors:
+        - type: directory
+          value: src/Paiement/.*
+    - name: Commande
+      collectors:
+        - type: directory
+          value: src/Commande/.*
+    - name: Livraison
+      collectors:
+        - type: directory
+          value: src/Livraison/.*
+    - name: Notification
+      collectors:
+        - type: directory
+          value: src/Notification/.*
+
+  ruleset:
+    Catalogue: []
+
+    Panier:
+      - Catalogue
+
+    Paiement:
+      - Panier
+
+    Commande:
+      - Catalogue
+      - Panier
+      - Paiement
+
+    Livraison:
+      - Commande
+
+    Notification:
+      - Livraison
+      - Commande
