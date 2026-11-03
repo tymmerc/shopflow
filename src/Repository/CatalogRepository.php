@@ -27,6 +27,20 @@ class CatalogRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Derniers articles ajoutés, pour la page d'accueil.
+     *
+     * @return Catalog[]
+     */
+    public function findLatest(int $limit): array
+    {
+        return $this->createQueryBuilder('c')
+            ->orderBy('c.id', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Catalog[] Returns an array of Catalog objects
     //     */

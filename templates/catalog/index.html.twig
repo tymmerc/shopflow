@@ -1,55 +1,93 @@
 {% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
 
 {% block title %}Catalogue{% endblock %}
 
 {% block body %}
-<main class="mx-auto max-w-6xl px-4 py-10">
+<div class="mx-auto max-w-6xl px-4 py-8">
 
-    <h1 class="mb-8 text-3xl font-bold text-slate-900">Catalogue</h1>
+    <header class="mb-6 flex flex-wrap items-end justify-between gap-2">
+        <div>
+            <h1 class="page-title">Catalogue</h1>
+            <p class="mt-1 text-[13px] text-fg-2">Composants électroniques et kits robotiques.</p>
+        </div>
+    </header>
 
     {% if articles is empty %}
-        <p class="rounded-lg bg-slate-100 p-6 text-center text-slate-600">
-            Aucun article pour le moment.
-        </p>
+        <div class="dashed flex flex-col items-center gap-3 bg-surface px-6 py-16 text-center">
+            <span class="text-muted">{{ ui.icon('package', 40) }}</span>
+            <p class="font-medium">Aucun article pour le moment.</p>
+            <p class="max-w-sm text-[13px] text-fg-2">Le catalogue est vide. Les articles apparaîtront ici dès qu'ils seront ajoutés.</p>
+        </div>
     {% else %}
-        <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {% for article in articles %}
-                <li class="flex flex-col overflow-hidden rounded-2xl bg-white shadow-md">
-                    {% if article.img %}
-                        <img src="{{ article.img }}" alt="{{ article.name }}" class="h-48 w-full object-cover">
-                    {% else %}
-                        <div class="flex h-48 items-center justify-center bg-slate-100 text-sm text-slate-400">
-                            Pas d'image
-                        </div>
-                    {% endif %}
+        <div data-controller="catalog">
+            {# Barre de filtres : toujours accessible (§5.7) #}
+            <div class="panel mb-3 flex flex-wrap items-center gap-3 p-3" role="search" aria-label="Filtrer le catalogue">
+                <div class="input-group min-w-[220px] flex-1">
+                    {{ ui.icon('search', 16) }}
+                    <label for="catalog-q" class="sr-only">Filtrer les articles</label>
+                    <input id="catalog-q" type="search" class="input input-sm pr-10"
+                           placeholder="Filtrer les articles"
+                           autocomplete="off" spellcheck="false" aria-keyshortcuts="/ Meta+F Control+F"
+                           data-catalog-target="query" data-shell-target="filter"
+                           data-action="input->catalog#apply keydown->catalog#clearOnEscape">
+                    <kbd class="kbd hidden sm:inline-flex">/</kbd>
+                </div>
 
-                    <div class="flex flex-1 flex-col gap-2 p-5">
-                        <h2 class="text-lg font-semibold text-slate-900">{{ article.name }}</h2>
+                <label class="flex h-9 cursor-pointer select-none items-center gap-2 rounded-md px-2 text-fg-2 hover:text-fg">
+                    <input type="checkbox" class="size-4 cursor-pointer rounded accent-[var(--primary)]"
+                           data-catalog-target="inStock" data-action="catalog#apply">
+                    En stock uniquement
+                </label>
 
-                        {% if article.desc %}
-                            <p class="flex-1 text-sm text-slate-600">{{ article.desc }}</p>
-                        {% endif %}
+                <div class="flex items-center gap-2">
+                    <label for="catalog-sort" class="text-[13px] text-fg-2">Trier par</label>
+                    <select id="catalog-sort" class="input input-sm w-auto" data-catalog-target="sort" data-action="catalog#apply">
+                        <option value="default">Pertinence</option>
+                        <option value="price-asc">Prix croissant</option>
+                        <option value="price-desc">Prix décroissant</option>
+                        <option value="name">Nom (A → Z)</option>
+                    </select>
+                </div>
 
-                        <div class="mt-3 flex items-center justify-between">
-                            <span class="text-xl font-bold text-indigo-600">
-                                {{ article.price|number_format(2, ',', ' ') }} €
-                            </span>
+                <div class="segmented" role="radiogroup" aria-label="Affichage"
+                     data-controller="segmented" data-catalog-target="view"
+                     data-action="keydown->segmented#keydown segmented:change->catalog#setView">
+                    <span class="segmented-thumb" data-segmented-target="thumb"></span>
+                    <button type="button" role="radio" aria-checked="true" class="segmented-option" data-value="grid"
+                            data-segmented-target="option" data-action="segmented#choose"
+                            aria-label="Grille" data-tooltip="Grille">
+                        {{ ui.icon('grid', 16) }}
+                    </button>
+                    <button type="button" role="radio" aria-checked="false" class="segmented-option" data-value="list"
+                            data-segmented-target="option" data-action="segmented#choose"
+                            aria-label="Liste" data-tooltip="Liste">
+                        {{ ui.icon('list', 16) }}
+                    </button>
+                </div>
+            </div>
 
-                            {% if article.stock > 0 %}
-                                <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
-                                    {{ article.stock }} en stock
-                                </span>
-                            {% else %}
-                                <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
-                                    Rupture de stock
-                                </span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
+            <p class="mb-3 font-mono text-[12px] text-fg-2 tnum" data-catalog-target="count" aria-live="polite">
+                {{ articles|length }} article{{ articles|length > 1 ? 's' }}
+            </p>
+
+            <ul class="product-grid" data-view="grid" data-catalog-target="list" aria-label="Articles">
+                {% for article in articles %}
+                    {{ include('partials/_product_card.html.twig', { article: article, index: loop.index0, filterable: true }) }}
+                {% endfor %}
+            </ul>
+
+            <div class="dashed flex flex-col items-center gap-3 bg-surface px-6 py-16 text-center" data-catalog-target="empty" hidden>
+                <span class="text-muted">{{ ui.icon('search-x', 40) }}</span>
+                <p class="font-medium" data-catalog-target="emptyQuery">Aucun article ne correspond.</p>
+                <p class="text-[13px] text-fg-2">Vérifiez l'orthographe ou élargissez les filtres.</p>
+                <button type="button" class="btn btn-secondary" data-action="catalog#reset">
+                    {{ ui.icon('rotate-ccw', 16) }}
+                    Effacer les filtres
+                </button>
+            </div>
+        </div>
     {% endif %}
 
-</main>
+</div>
 {% endblock %}

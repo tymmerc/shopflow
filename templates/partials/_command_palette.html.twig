@@ -1,0 +1,72 @@
+{% import '_icons.html.twig' as ui %}
+{#
+    Palette de commandes (⌘K / Ctrl+K) : pages, actions et recherche catalogue.
+    Chaque option porte soit data-href (navigation), soit data-command (événement window).
+#}
+{% set commands = {
+    'Pages': [
+        { label: 'Accueil', icon: 'home', href: path('app_home'), keywords: 'home accueil' },
+        { label: 'Catalogue', icon: 'store', href: path('app_catalog'), keywords: 'produits articles boutique catalog' },
+        { label: 'Panier', icon: 'cart', href: path('app_cart'), keywords: 'cart commande' },
+    ],
+    'Actions': [
+        { label: 'Changer de thème', icon: 'palette', command: 'theme:cycle', keywords: 'sombre clair dark light theme' },
+        { label: 'Raccourcis clavier', icon: 'keyboard', command: 'shortcuts', keywords: 'aide help clavier', kbd: '?' },
+    ],
+} %}
+
+<dialog id="palette" class="modal modal-lg modal-top" aria-label="Palette de commandes"
+        data-controller="dialog palette"
+        data-palette-catalog-url-value="{{ path('app_catalog') }}"
+        data-action="dialog:open@window->dialog#openFromEvent click->dialog#backdropClose close->dialog#restoreFocus dialog:opened->palette#reset">
+    <div class="flex items-center gap-3 border-b border-line px-4">
+        <span class="text-fg-2">{{ ui.icon('search', 20) }}</span>
+        <input type="text" class="h-14 flex-1 bg-transparent text-[15px] text-fg outline-none placeholder:text-muted focus-visible:shadow-none"
+               placeholder="Rechercher un article ou une page…"
+               role="combobox" aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list"
+               autocomplete="off" spellcheck="false"
+               data-palette-target="input"
+               data-action="input->palette#filter keydown->palette#navigate">
+        <kbd class="kbd">Échap</kbd>
+    </div>
+
+    <ul id="palette-list" role="listbox" aria-label="Résultats" class="max-h-[min(60vh,420px)] overflow-y-auto p-2" data-palette-target="list">
+        <li role="presentation" data-palette-target="searchGroup" hidden>
+            <p class="section-label px-3 pb-1 pt-2">Catalogue</p>
+        </li>
+        <li id="palette-search" role="option" class="menu-item" aria-selected="false"
+            data-palette-target="option searchOption" data-action="click->palette#run mousemove->palette#hover" hidden>
+            <span class="text-fg-2">{{ ui.icon('search', 16) }}</span>
+            <span class="flex-1 truncate">Rechercher « <strong class="font-semibold" data-palette-target="query"></strong> » dans le catalogue</span>
+            <span class="text-muted">{{ ui.icon('corner-down-left', 16) }}</span>
+        </li>
+
+        {% for group, items in commands %}
+            <li role="presentation" data-palette-target="group" data-group="{{ group }}">
+                <p class="section-label px-3 pb-1 pt-2">{{ group }}</p>
+            </li>
+            {% for item in items %}
+                <li id="palette-{{ group|lower }}-{{ loop.index }}" role="option" class="menu-item" aria-selected="false"
+                    data-palette-target="option" data-group="{{ group }}"
+                    data-search="{{ (item.label ~ ' ' ~ item.keywords)|lower }}"
+                    {% if item.href is defined %}data-href="{{ item.href }}"{% endif %}
+                    {% if item.command is defined %}data-command="{{ item.command }}"{% endif %}
+                    data-action="click->palette#run mousemove->palette#hover">
+                    <span class="text-fg-2">{{ ui.icon(item.icon, 16) }}</span>
+                    <span class="flex-1">{{ item.label }}</span>
+                    {% if item.kbd is defined %}<kbd class="kbd">{{ item.kbd }}</kbd>{% endif %}
+                </li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+
+    <p class="hidden px-4 py-8 text-center text-fg-2" data-palette-target="empty">
+        Aucune commande ne correspond. Appuyez sur <kbd class="kbd">↵</kbd> pour chercher dans le catalogue.
+    </p>
+
+    <div class="flex items-center gap-4 border-t border-line bg-subtle px-4 py-2 text-[12px] text-fg-2 rounded-b-[var(--radius-lg)]">
+        <span class="flex items-center gap-1"><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> naviguer</span>
+        <span class="flex items-center gap-1"><kbd class="kbd">↵</kbd> ouvrir</span>
+        <span class="flex items-center gap-1"><kbd class="kbd">Échap</kbd> fermer</span>
+    </div>
+</dialog>

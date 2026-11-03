@@ -1,0 +1,58 @@
+{% import '_icons.html.twig' as ui %}
+{#
+    Carte produit. Variables : article, index (position d'origine), filterable (cible du filtre catalogue).
+#}
+{% set url = path('app_catalog_show', { id: article.id }) %}
+{% set out = article.stock <= 0 %}
+<li class="product-card"
+    data-controller="add-to-cart"
+    data-add-to-cart-id-value="{{ article.id }}"
+    data-add-to-cart-name-value="{{ article.name }}"
+    data-add-to-cart-price-value="{{ article.price }}"
+    data-add-to-cart-stock-value="{{ article.stock }}"
+    data-add-to-cart-url-value="{{ url }}"
+    data-add-to-cart-cart-url-value="{{ path('app_cart') }}"
+    {% if filterable ?? false %}
+        data-catalog-target="item"
+        data-index="{{ index }}"
+        data-name="{{ article.name }}"
+        data-price="{{ article.price }}"
+        data-stock="{{ article.stock }}"
+        data-search="{{ article.name }} {{ article.desc }}"
+    {% endif %}>
+    <a href="{{ url }}" class="product-media" tabindex="-1" aria-hidden="true">
+        {% if article.img %}
+            <img src="{{ article.img }}" alt="" loading="lazy" decoding="async">
+        {% else %}
+            {{ ui.icon('package', 32) }}
+        {% endif %}
+    </a>
+
+    <div class="product-body">
+        <div class="product-info flex flex-col gap-1">
+            <h3 class="truncate text-[14px] font-semibold">
+                <a href="{{ url }}" class="rounded-sm hover:text-link">{{ article.name }}</a>
+            </h3>
+            {% if article.desc %}
+                <p class="product-desc text-[13px] text-fg-2">{{ article.desc }}</p>
+            {% endif %}
+        </div>
+
+        <div class="product-footer">
+            <div class="product-price">
+                <span class="tnum text-[16px] font-semibold">{{ article.price|number_format(2, ',', ' ') }}&nbsp;€</span>
+                {{ include('partials/_stock_badge.html.twig', { stock: article.stock }) }}
+            </div>
+
+            <span class="inline-flex" {% if out %}data-tooltip="Article en rupture de stock"{% endif %}>
+                <button type="button" class="btn btn-secondary btn-sm"
+                        data-add-to-cart-target="button" data-action="add-to-cart#add"
+                        aria-label="Ajouter « {{ article.name }} » au panier"
+                        {% if out %}disabled{% endif %}>
+                    {{ ui.icon('plus', 16) }}
+                    <span data-add-to-cart-target="label">Ajouter</span>
+                </button>
+            </span>
+        </div>
+    </div>
+</li>

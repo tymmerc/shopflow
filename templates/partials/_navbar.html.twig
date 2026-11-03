@@ -1,0 +1,93 @@
+{% import '_icons.html.twig' as ui %}
+{% set route = app.current_route ?? '' %}
+{% set links = [
+    { label: 'Accueil', route: 'app_home', icon: 'home', active: route starts with 'app_home' },
+    { label: 'Catalogue', route: 'app_catalog', icon: 'store', active: route starts with 'app_catalog' },
+] %}
+
+<header class="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur-md supports-[backdrop-filter]:bg-surface/80">
+    <nav aria-label="Navigation principale" class="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4">
+        <a href="{{ path('app_home') }}" class="brand mr-3 flex items-center gap-2 rounded-md text-[24px] leading-none" aria-label="ShopFlow, accueil">
+            <span class="grid size-7 place-items-center rounded-[8px] bg-primary text-on-primary">{{ ui.icon('cpu', 16) }}</span>
+            <span>ShopFlow</span>
+        </a>
+
+        <ul class="hidden items-center gap-1 md:flex">
+            {% for link in links %}
+                <li>
+                    <a href="{{ path(link.route) }}" class="nav-link" {% if link.active %}aria-current="page"{% endif %}>
+                        {{ link.label }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <div class="ml-auto flex items-center gap-1">
+            <button type="button"
+                    class="mr-1 hidden h-9 w-60 items-center gap-2 rounded-md border border-line bg-subtle px-3 text-fg-2 transition-colors duration-[120ms] hover:border-line-strong hover:text-fg sm:flex"
+                    data-action="shell#open" data-shell-dialog-param="palette"
+                    aria-keyshortcuts="Meta+K Control+K">
+                {{ ui.icon('search', 16) }}
+                <span class="flex-1 text-left">Rechercher…</span>
+                <kbd class="kbd" data-mod-key>⌘K</kbd>
+            </button>
+            <button type="button" class="btn btn-ghost btn-icon sm:hidden"
+                    data-action="shell#open" data-shell-dialog-param="palette"
+                    aria-label="Rechercher" data-tooltip="Rechercher" data-tooltip-pos="bottom">
+                {{ ui.icon('search', 20) }}
+            </button>
+
+            <button type="button" class="btn btn-ghost btn-icon"
+                    data-controller="theme" data-action="theme#cycle theme:cycle@window->theme#cycle"
+                    data-tooltip-pos="bottom">
+                <span data-theme-target="icon" data-mode="system">{{ ui.icon('monitor', 20) }}</span>
+                <span data-theme-target="icon" data-mode="light" hidden>{{ ui.icon('sun', 20) }}</span>
+                <span data-theme-target="icon" data-mode="dark" hidden>{{ ui.icon('moon', 20) }}</span>
+            </button>
+
+            <a href="{{ path('app_cart') }}" class="btn btn-ghost btn-icon {{ route == 'app_cart' ? 'bg-selected text-fg' }}"
+               data-controller="cart-badge" aria-label="Panier"
+               {% if route == 'app_cart' %}aria-current="page"{% endif %}
+               data-tooltip="Panier" data-tooltip-pos="bottom">
+                {{ ui.icon('cart', 20) }}
+                <span class="counter tnum" data-cart-badge-target="count" hidden></span>
+            </a>
+
+            <button type="button" class="btn btn-ghost btn-icon md:hidden"
+                    data-action="shell#open" data-shell-dialog-param="mobile-nav"
+                    aria-label="Ouvrir le menu" aria-haspopup="dialog">
+                {{ ui.icon('menu', 20) }}
+            </button>
+        </div>
+    </nav>
+</header>
+
+{# Menu mobile : drawer sur <dialog> natif (focus piégé, Échap) #}
+<dialog id="mobile-nav" class="drawer" aria-label="Menu" data-controller="dialog"
+        data-action="dialog:open@window->dialog#openFromEvent click->dialog#backdropClose close->dialog#restoreFocus">
+    <div class="flex h-full flex-col">
+        <div class="flex h-14 items-center justify-between border-b border-line px-4">
+            <span class="brand text-[24px] leading-none">ShopFlow</span>
+            <button type="button" class="btn btn-ghost btn-icon" data-action="dialog#close" aria-label="Fermer le menu">
+                {{ ui.icon('x', 20) }}
+            </button>
+        </div>
+        <ul class="flex flex-col gap-1 p-3">
+            {% for link in links|merge([{ label: 'Panier', route: 'app_cart', icon: 'cart', active: route == 'app_cart' }]) %}
+                <li>
+                    <a href="{{ path(link.route) }}" class="menu-item" data-action="dialog#close" {% if link.active %}aria-current="page"{% endif %}>
+                        <span class="text-fg-2">{{ ui.icon(link.icon, 20) }}</span>
+                        {{ link.label }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="mt-auto border-t border-line p-3">
+            <button type="button" class="menu-item w-full text-fg-2"
+                    data-action="dialog#close shell#open" data-shell-dialog-param="palette">
+                {{ ui.icon('search', 20) }}
+                <span class="flex-1 text-left">Rechercher</span>
+            </button>
+        </div>
+    </div>
+</dialog>
