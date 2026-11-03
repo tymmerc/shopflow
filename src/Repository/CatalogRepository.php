@@ -19,7 +19,7 @@ class CatalogRepository extends ServiceEntityRepository
     /**
      * @return Catalog[]
      */
-    public function findAllCatalogs(): array
+    public function findAll(): array
     {
         return $this->createQueryBuilder('c')
             ->orderBy('c.id', 'ASC')
