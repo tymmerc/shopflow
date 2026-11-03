@@ -2,9 +2,12 @@
 
 namespace App\Order\UI\Http;
 
-use App\Order\Application\PlaceOrderHandler;
+use App\Cart\CartService;
+use App\Order\Application\MakeOrder;
+use App\Order\Application\MakeOrderHandler;
 use App\Order\Application\Port\OrderRepository;
 use App\Order\Domain\Exception\EmptyCartException;
+use App\Order\Domain\OrderLine;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,10 +20,19 @@ final class OrderController extends AbstractController
 
     #[Route('/order', name: 'app_order_place', methods: ['POST'])]
     #[IsCsrfTokenValid('order')]
-    public function place(PlaceOrderHandler $placeOrder): Response
+    public function place(MakeOrderHandler $makeOrder, CartService $cartService): Response
     {
+        $cart = [];
+        foreach ($cartService->current()?->getItems() ?? [] as $item) {
+            $cart[] = new OrderLine(
+                $item->getCatalog()->getId(),
+                (int) round((float) $item->getCatalog()->getPrice() * 100),
+                $item->getQuantity(),
+            );
+        }
+
         try {
-            $placeOrder(self::TEMPORARY_USER_ID);
+            $makeOrder(new MakeOrder(userId: self::TEMPORARY_USER_ID, cart: $cart));
         } catch (EmptyCartException $e) {
             $this->addFlash('error', $e->getMessage());
 
