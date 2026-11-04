@@ -1,8 +1,10 @@
 FROM php:8.3-apache
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git unzip libicu-dev libzip-dev \
+    && apt-get install -y --no-install-recommends git unzip libicu-dev libzip-dev librabbitmq-dev \
     && docker-php-ext-install pdo_mysql intl zip opcache \
+    && pecl install amqp \
+    && docker-php-ext-enable amqp \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
