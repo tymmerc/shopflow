@@ -150,3 +150,7 @@ Après une nouvelle migration, rejouez la commande `doctrine:migrations:migrate 
 
 - [Contrat OpenAPI](docs/api/openapi.yaml), consultable dans Swagger sur http://localhost:8000/api/docs
 - [ADR-006 : REST plutôt que GraphQL pour le partenaire](docs/adr/ADR-006-rest-plutot-que-graphql.md)
+
+## Jalon 6 : préparer ShopFlow à la panne
+
+- [ADR-007 : seuils et délais face aux pannes](docs/adr/ADR-007-seuils-et-delais-pannes.md)
