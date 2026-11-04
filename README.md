@@ -46,6 +46,7 @@ Puis rechargez la page sans cache : Ctrl+Shift+R (Cmd+Shift+R sur Mac).
 ### Adresses
 
 - Site : http://localhost:8000
+- API, à tester dans Swagger (bouton « Try it out ») : http://localhost:8000/api/docs
 - Mailpit, les mails envoyés par l'appli : http://localhost:8025
 - MySQL : port 3307 de la machine, base `shopflow`, utilisateur `app` / `app` (mots de passe de dev)
 
@@ -69,6 +70,33 @@ Stack : Symfony 7.4 (webapp), PHP 8.3 + Apache, MySQL 8.4, Mailpit. Déploiement
 Aucun vrai prestataire de paiement n'est branché : en dev, « Passer commande » mène à une page de paiement simulée (`/payment/fake/…`) avec les boutons Payer et Refuser. Elle n'existe pas en production.
 
 Les e-mails partent en file (Messenger) et sont envoyés par le service `worker`, puis arrivent dans Mailpit. Après une modification de `config/`, relancez-le : `docker compose restart worker`.
+
+## Tester l'API à la main
+
+Les réponses sont en JSON ; `| jq` les affiche lisibles (sans jq : `| python3 -m json.tool`).
+Le panier est lié à la session, comme sur le site : `-c cookies.txt -b cookies.txt` garde le cookie d'une commande à l'autre.
+
+```bash
+# Produits
+curl -s localhost:8000/api/v1/products | jq
+curl -s "localhost:8000/api/v1/products?category=Capteurs&level=Débutant" | jq
+curl -s localhost:8000/api/v1/products/14 | jq
+
+# Panier
+curl -s -c cookies.txt -b cookies.txt localhost:8000/api/v1/cart | jq
+curl -s -c cookies.txt -b cookies.txt -X POST localhost:8000/api/v1/cart/items/14 -H "Content-Type: application/json" -d '{"quantity": 2}' | jq
+curl -s -c cookies.txt -b cookies.txt -X PUT localhost:8000/api/v1/cart/items/14 -H "Content-Type: application/json" -d '{"quantity": 3}' | jq
+curl -s -c cookies.txt -b cookies.txt -X DELETE localhost:8000/api/v1/cart/items/14 | jq
+
+# Commande (le panier ne doit pas être vide), puis la relire avec l'id reçu
+curl -s -c cookies.txt -b cookies.txt -X POST localhost:8000/api/v1/orders -H "Content-Type: application/json" -d '{}' | jq
+curl -s -b cookies.txt localhost:8000/api/v1/orders/1 | jq
+
+# Erreurs : 400 catégorie inconnue, 404 produit inconnu, 415 corps pas en JSON
+curl -s "localhost:8000/api/v1/products?category=Robots" | jq
+curl -s localhost:8000/api/v1/products/999 | jq
+curl -s -X POST localhost:8000/api/v1/orders -d 'x' | jq
+```
 
 ## Tests
 
