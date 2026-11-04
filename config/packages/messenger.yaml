@@ -8,7 +8,14 @@ framework:
 
         # Transport definition
         transports:
-            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    exchange:
+                        name: 'messages'
+                        type: 'direct'
+                    queues:
+                        messages: ~
 
         # Routing rules
         routing:
@@ -17,7 +24,7 @@ framework:
             Symfony\Component\Notifier\Message\ChatMessage: async
             Symfony\Component\Notifier\Message\SmsMessage: async
 
-# En test : les e-mails restent en mémoire (pas de worker, pas d'écriture dans messenger_messages)
+# En test : les e-mails restent en mémoire (pas de worker, pas d'écriture dans RabbitMQ)
 # et se vérifient avec assertQueuedEmailCount()
 when@test:
     framework:
