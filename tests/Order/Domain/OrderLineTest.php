@@ -27,4 +27,11 @@ final class OrderLineTest extends TestCase
 
         new OrderLine(7, -1, 1);
     }
+
+    public function testQuantityCannotBeNegative(): void
+    {
+        $this->expectException(\DomainException::class);
+
+        new OrderLine(7, 1999, -1);
+    }
 }
