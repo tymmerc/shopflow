@@ -17,18 +17,20 @@ Il faut Docker (Docker Desktop sur Mac ou Windows).
 ### Première fois
 
 ```bash
+cp -n .env.example .env
 docker compose up -d --build
 docker compose exec php php bin/console doctrine:migrations:migrate -n
 docker compose exec php php bin/console doctrine:fixtures:load -n
 ```
 
-La 2e commande crée les tables, la 3e met les produits de démo (la boutique de robotique).
+La 1re commande crée votre `.env` à partir du modèle (le `.env` n'est jamais poussé : vos valeurs à vous, comme une vraie clé, vont dedans). La 3e crée les tables, la 4e met les produits de démo (la boutique de robotique).
 
 ### Après chaque `git pull` (à faire à chaque fois)
 
 Un `git pull` ne suffit pas : le code est copié dans l'image Docker, il faut la reconstruire, sinon vous voyez l'ancien site.
 
 ```bash
+cp -n .env.example .env
 docker compose up -d --build
 docker compose exec php php bin/console doctrine:migrations:migrate -n
 ```
@@ -47,7 +49,7 @@ Puis rechargez la page sans cache : Ctrl+Shift+R (Cmd+Shift+R sur Mac).
 - Mailpit, les mails envoyés par l'appli : http://localhost:8025
 - MySQL : port 3307 de la machine, base `shopflow`, utilisateur `app` / `app` (mots de passe de dev)
 
-Symfony et ses dépendances (`vendor/`) sont installés dans l'image Docker au moment du `--build`. Les dossiers `src/`, `templates/` et `config/` sont branchés sur vos fichiers : une modif dans l'éditeur se voit tout de suite, sans reconstruire. Après un `composer require`, relancez `docker compose up -d --build`.
+Symfony et ses dépendances (`vendor/`) sont installés dans l'image Docker au moment du `--build`, avec votre `.env` : après l'avoir modifié, relancez `docker compose up -d --build`. Les dossiers `src/`, `templates/` et `config/` sont branchés sur vos fichiers : une modif dans l'éditeur se voit tout de suite, sans reconstruire. Après un `composer require`, relancez `docker compose up -d --build`.
 
 Toujours lancer les commandes Symfony et Composer dans le conteneur, jamais sur sa machine :
 
