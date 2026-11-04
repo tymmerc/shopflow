@@ -1,6 +1,4 @@
-# Environnement de dev ShopFlow : appli Symfony, MySQL, Adminer, Mailpit.
-# Lancer : docker compose up -d --build, puis http://localhost:8000
-# Adminer : http://localhost:8080 (serveur database, user app / mdp app)
+
 services:
   php:
     build:
@@ -9,7 +7,7 @@ services:
     ports:
       - "127.0.0.1:${HTTP_PORT:-8000}:80"
     volumes:
-      # Symfony est dans l'image ; on branche seulement le code qu'on modifie
+
       - ./src:/var/www/html/src
       - ./templates:/var/www/html/templates
       - ./assets:/var/www/html/assets
@@ -18,12 +16,9 @@ services:
       # Tests : docker compose exec php php bin/phpunit
       - ./tests:/var/www/html/tests
       - ./phpunit.dist.xml:/var/www/html/phpunit.dist.xml
-      # Pour qu'un composer require dans le conteneur reste dans le dépôt
-      - ./composer.json:/var/www/html/composer.json
-      - ./composer.lock:/var/www/html/composer.lock
-      - ./symfony.lock:/var/www/html/symfony.lock
+
       - ./.env:/var/www/html/.env
-      # CSS compilée par le service tailwind (le binaire est déjà dans l'image)
+
       - tailwind_build:/var/www/html/var/tailwind
     depends_on:
       database:
@@ -36,14 +31,12 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-    command: php bin/console messenger:consume async --time-limit=3600 -vv
+    user: www-data
+    command: php bin/console messenger:consume async --time-limit=600 --memory-limit=128M -vv
     restart: unless-stopped
     volumes:
       - ./src:/var/www/html/src
-      - ./templates:/var/www/html/templates
       - ./config:/var/www/html/config
-      - ./composer.json:/var/www/html/composer.json
-      - ./composer.lock:/var/www/html/composer.lock
       - ./.env:/var/www/html/.env
     depends_on:
       database:
