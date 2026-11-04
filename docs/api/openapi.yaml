@@ -87,13 +87,27 @@ paths:
       tags: [Produits]
       summary: Voir un produit (fiche complète)
       operationId: getProduct
-      # À FAIRE :
-      #  - le paramètre {id} (in: path, entier, obligatoire), sur le modèle des paramètres ci-dessus
-      #  - la réponse 200 : schéma ProductDetail (à écrire plus bas, il ajoute des champs à ProductSummary)
-      #  - la réponse 404 : le produit n'existe pas, au format Problem
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Num du produit.
+          schema:
+            type: integer
       responses:
         '200':
-          description: À FAIRE
+          description: Tiens ton produit !
+        '404':
+          description: Aucun produit qui possède cet identifiant :(
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: https://tools.ietf.org/html/rfc2616#section-10
+                title: An error occurred
+                status: 404
+                detail: Produit introuvable.
 
   # ---------------------------------------------------------------- Panier
   # Le panier existe déjà (CartApiController, fait par Nathan) : ici on DÉCRIT ce qu'il fait, sans le changer.
