@@ -74,6 +74,11 @@ function refresh() {
 channel?.addEventListener('message', ({ data }) => { if (pending === 0) receive(data); });
 refresh();
 
+// Se résout quand toutes les modifications en cours ont été envoyées au serveur
+export function synced() {
+    return queue;
+}
+
 export function isLoaded() {
     return loaded;
 }

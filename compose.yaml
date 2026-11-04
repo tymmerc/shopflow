@@ -15,6 +15,9 @@ services:
       - ./assets:/var/www/html/assets
       - ./config:/var/www/html/config
       - ./migrations:/var/www/html/migrations
+      # Tests : docker compose exec php php bin/phpunit
+      - ./tests:/var/www/html/tests
+      - ./phpunit.dist.xml:/var/www/html/phpunit.dist.xml
       # Pour qu'un composer require dans le conteneur reste dans le dépôt
       - ./composer.json:/var/www/html/composer.json
       - ./composer.lock:/var/www/html/composer.lock
@@ -26,6 +29,28 @@ services:
       database:
         condition: service_healthy
     mem_limit: 512m
+
+  # Envoie les e-mails mis en file par Messenger (transport doctrine) : le paiement n'attend pas le serveur mail.
+  # Après une modification de config/ ou src/ qui touche l'envoi : docker compose restart worker
+  worker:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    command: php bin/console messenger:consume async --time-limit=3600 -vv
+    restart: unless-stopped
+    volumes:
+      - ./src:/var/www/html/src
+      - ./templates:/var/www/html/templates
+      - ./config:/var/www/html/config
+      - ./composer.json:/var/www/html/composer.json
+      - ./composer.lock:/var/www/html/composer.lock
+      - ./.env:/var/www/html/.env
+    depends_on:
+      database:
+        condition: service_healthy
+      mailer:
+        condition: service_started
+    mem_limit: 256m
 
   # Recompile la CSS à chaque modification de assets/ ou templates/
   tailwind:

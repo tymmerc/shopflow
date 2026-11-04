@@ -22,7 +22,11 @@ final class DoctrineOrderRepository implements OrderRepository
     public function save(Order $order): void
     {
         $entity = (null !== $order->getId() ? $this->repository->find($order->getId()) : null) ?? new OrderEntity();
-        $entity->setUserId($order->getUserId());
+        $entity
+            ->setUserId($order->getUserId())
+            ->setCartId($order->getCartId())
+            ->setStatus($order->getStatus())
+            ->setPlacedAt($order->getPlacedAt());
 
         if ($entity->getItems()->isEmpty()) {
             foreach ($order->getLines() as $line) {
@@ -69,6 +73,13 @@ final class DoctrineOrderRepository implements OrderRepository
             );
         }
 
-        return Order::reconstitute($entity->getId(), $entity->getUserId(), $lines);
+        return Order::reconstitute(
+            $entity->getId(),
+            $entity->getUserId(),
+            $entity->getCartId(),
+            $lines,
+            $entity->getStatus(),
+            $entity->getPlacedAt(),
+        );
     }
 }

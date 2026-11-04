@@ -1,5 +1,8 @@
 twig:
     file_name_pattern: '*.twig'
+    # Les dates sont stockées dans le fuseau de PHP (UTC dans le conteneur) ; on les affiche à l'heure de Paris
+    date:
+        timezone: Europe/Paris
 
 when@test:
     twig:

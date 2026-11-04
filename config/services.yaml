@@ -7,6 +7,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    # TODO: remplacer par l'e-mail du client connecté quand l'authentification existera
+    app.temporary_customer_email: 'client@shopflow.test'
 
 services:
     # default configuration for services in *this* file
@@ -20,7 +22,24 @@ services:
         resource: '../src/'
 
     App\Order\Application\Port\OrderRepository: '@App\Order\Infrastructure\Doctrine\DoctrineOrderRepository'
-    App\Order\Application\Port\PaymentGateway: '@App\Order\Infrastructure\Payment\PspGateway'
+    App\Order\Application\Port\Stock: '@App\Order\Infrastructure\Doctrine\DoctrineStock'
+    App\Order\Application\Port\OrderConfirmationUrl: '@App\Order\Infrastructure\Routing\SymfonyOrderConfirmationUrl'
+    App\Order\Application\Port\CartCleaner: '@App\Order\Infrastructure\Cart\CartServiceCleaner'
+    App\Notification\Application\Port\OrderConfirmationSender: '@App\Notification\Infrastructure\MailerOrderConfirmationSender'
+
+    App\Notification\Application\SendOrderConfirmationHandler:
+        arguments:
+            $recipient: '%app.temporary_customer_email%'
+    App\Payment\Application\Port\PaymentRepository: '@App\Payment\Infrastructure\Doctrine\DoctrinePaymentRepository'
+    App\Shared\Application\EventPublisher: '@App\Shared\Infrastructure\SymfonyEventPublisher'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+# Faux PSP en dev et en test uniquement. En prod, aucun PSP n'est branché : le conteneur
+# refusera de démarrer dès qu'un service aura besoin de PaymentGateway, c'est voulu.
+when@dev: &fake_psp
+    services:
+        App\Payment\Application\Port\PaymentGateway: '@App\Payment\Infrastructure\FakePaymentGateway'
+
+when@test: *fake_psp

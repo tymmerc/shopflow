@@ -55,15 +55,17 @@
                     <dt>Total</dt><dd class="tnum" data-cart-target="total"></dd>
                 </div>
             </dl>
-            <span class="inline-flex" data-tooltip="Le paiement en ligne n'est pas encore disponible">
-                <button type="button" class="btn btn-primary btn-lg w-full" disabled aria-describedby="checkout-help">
+            {# data-turbo="false" : Turbo envoie les formulaires en fetch, qui ne peut pas suivre une redirection vers le site d'un vrai PSP #}
+            <form method="post" action="{{ path('app_order_place') }}" data-turbo="false" data-action="cart#checkout">
+                <input type="hidden" name="_token" value="{{ csrf_token('order') }}">
+                <button type="submit" class="btn btn-primary btn-lg w-full" aria-describedby="checkout-help" data-cart-target="checkout">
                     {{ ui.icon('credit-card', 20) }}
                     Passer commande
                 </button>
-            </span>
+            </form>
             <p id="checkout-help" class="flex items-start gap-2 rounded-md bg-info-bg p-3 text-[13px] text-info">
                 {{ ui.icon('info', 16, 'mt-0.5') }}
-                Le paiement en ligne arrive bientôt. Votre panier est enregistré : vous le retrouverez lors de votre prochaine visite.
+                Vous serez redirigé vers la page de paiement sécurisé. Votre panier est enregistré : vous le retrouverez lors de votre prochaine visite.
             </p>
         </aside>
     </div>

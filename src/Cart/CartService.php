@@ -94,19 +94,36 @@ final class CartService
     {
         $cart = $this->current();
         if (null !== $cart) {
-            foreach ($cart->getItems()->toArray() as $item) {
-                $cart->removeItem($item);
-            }
-            $this->entityManager->flush();
+            $this->empty($cart);
         }
 
         return $cart;
+    }
+
+    /**
+     * Vide un panier sans passer par le cookie du visiteur : après un paiement, la confirmation
+     * d'un vrai PSP (webhook) arrive depuis ses serveurs, sans le cookie du client.
+     */
+    public function clearById(int $cartId): void
+    {
+        $cart = $this->carts->find($cartId);
+        if (null !== $cart) {
+            $this->empty($cart);
+        }
     }
 
     /** À renvoyer à chaque réponse : la durée de vie repart de zéro à chaque visite. */
     public function cookie(Cart $cart): Cookie
     {
         return Cookie::create(self::COOKIE, $cart->getToken(), new \DateTimeImmutable(self::COOKIE_LIFETIME));
+    }
+
+    private function empty(Cart $cart): void
+    {
+        foreach ($cart->getItems()->toArray() as $item) {
+            $cart->removeItem($item);
+        }
+        $this->entityManager->flush();
     }
 
     private function currentOrCreate(): Cart
