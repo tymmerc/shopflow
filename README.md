@@ -111,3 +111,8 @@ Après une nouvelle migration, rejouez la commande `doctrine:migrations:migrate 
 ## Jalon 4 : événements
 
 - [ADR-005 : ce qui reste synchrone](docs/adr/ADR-005-synchrone-asynchrone.md)
+
+## Jalon 5 : API REST et messages
+
+- [Contrat OpenAPI](docs/api/openapi.yaml), consultable dans Swagger sur http://localhost:8000/api/docs
+- [ADR-006 : REST plutôt que GraphQL pour le partenaire](docs/adr/ADR-006-rest-plutot-que-graphql.md)
