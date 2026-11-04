@@ -1,7 +1,9 @@
 .git
 vendor
 var
-docs
+# docs/ reste hors de l'image, sauf le contrat de l'API servi sur /api/docs
+docs/*
+!docs/api
 .env.local
 .env.*.local
 compose.yaml

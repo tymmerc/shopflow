@@ -16,6 +16,8 @@ services:
       # Tests : docker compose exec php php bin/phpunit
       - ./tests:/var/www/html/tests
       - ./phpunit.dist.xml:/var/www/html/phpunit.dist.xml
+      # Contrat de l'API, servi sur /api/docs : une modif se voit sans reconstruire
+      - ./docs/api:/var/www/html/docs/api
 
 
       - tailwind_build:/var/www/html/var/tailwind
