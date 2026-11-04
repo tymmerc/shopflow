@@ -82,6 +82,76 @@ final class ApiTest extends WebTestCase
         $this->assertSame('Produit introuvable.', $problem['detail']);
     }
 
+    public function testAProductAddedToTheCartIsCappedByStock(): void
+    {
+        $cart = $this->send('POST', '/api/v1/cart/items/' . $this->servoId, ['quantity' => 50]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame([[
+            'id' => $this->servoId,
+            'name' => 'Servomoteur SG90 9 g',
+            'price' => 3.2,
+            'stock' => 10,
+            'url' => '/catalog/' . $this->servoId,
+            'qty' => 10,
+        ]], $cart['items']);
+    }
+
+    public function testAnUnknownProductCannotBeAddedToTheCart(): void
+    {
+        $problem = $this->send('POST', '/api/v1/cart/items/999999', ['quantity' => 1]);
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertSame('Produit introuvable.', $problem['detail']);
+    }
+
+    public function testAQuantityMustBeAPositiveInteger(): void
+    {
+        foreach ([[], ['quantity' => 0], ['quantity' => '2'], ['quantity' => [2]]] as $body) {
+            $this->send('PUT', '/api/v1/cart/items/' . $this->servoId, $body);
+
+            $this->assertResponseStatusCodeSame(422, json_encode($body, \JSON_THROW_ON_ERROR));
+        }
+    }
+
+    public function testTheCartRequiresJson(): void
+    {
+        $headers = ['HTTP_ACCEPT' => 'application/json'];
+        $this->client->request('POST', '/api/v1/cart/items/' . $this->servoId, [], [], $headers, 'quantity=1');
+        $this->assertResponseStatusCodeSame(415);
+
+        $this->client->request('POST', '/api/v1/cart/items/' . $this->servoId, [], [], ['CONTENT_TYPE' => 'application/json', ...$headers], '{quantity');
+        $this->assertResponseStatusCodeSame(415);
+    }
+
+    public function testTheWholeCartCanBeReplaced(): void
+    {
+        $this->send('POST', '/api/v1/cart/items/' . $this->servoId, ['quantity' => 1]);
+        $cart = $this->send('PUT', '/api/v1/cart', ['items' => [['id' => $this->servoId, 'quantity' => 3]]]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame(3, $cart['items'][0]['qty']);
+    }
+
+    public function testReplacingTheCartRequiresItems(): void
+    {
+        $this->send('POST', '/api/v1/cart/items/' . $this->servoId, ['quantity' => 1]);
+
+        foreach ([[], ['items' => 'x'], ['items' => [['id' => 'x', 'quantity' => 1]]]] as $body) {
+            $this->send('PUT', '/api/v1/cart', $body);
+
+            $this->assertResponseStatusCodeSame(422, json_encode($body, \JSON_THROW_ON_ERROR));
+        }
+        $this->assertCount(1, $this->get('/api/v1/cart')['items']);
+    }
+
+    public function testRemovingAnUnknownProductFromTheCartIsNotFound(): void
+    {
+        $this->client->request('DELETE', '/api/v1/cart/items/999999', [], [], ['HTTP_ACCEPT' => 'application/json']);
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
     public function testAnOrderIsPlacedFromTheCartAndCanBeReadBack(): void
     {
         $this->send('POST', '/api/v1/cart/items/' . $this->servoId, ['quantity' => 2]);
