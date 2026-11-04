@@ -107,3 +107,7 @@ Après une nouvelle migration, rejouez la commande `doctrine:migrations:migrate 
 
 - [ADR-003 : architecture monolithique](docs/adr/ADR-003-monolithe.md)
 - [Context map](docs/ddd/context-map.png) (source draw.io : [docs/ddd/context-map.drawio](docs/ddd/context-map.drawio))
+
+## Jalon 4 : événements
+
+- [ADR-005 : ce qui reste synchrone](docs/adr/ADR-005-synchrone-asynchrone.md)
