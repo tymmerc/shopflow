@@ -1,6 +1,6 @@
 <?php
 
-namespace Command\Domain\Event;
+namespace App\Command\Domain\Event;
 
 use DateTimeImmutable;
 

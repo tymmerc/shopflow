@@ -1,14 +1,14 @@
 <?php
 
-namespace Catalogue\Handler;
+namespace App\Catalog\Handler;
 
-use Command\Domain\Event\CommandePassee;
+use Command\Domain\Event\CommandePlaced;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
 final class DecrementerStockHandler
 {
-    public function __invoke(CommandePassee $e): void
+    public function __invoke(CommandPlaced $e): void
     { 
         /* idempotent : ignore si déjà traité */ 
     }
