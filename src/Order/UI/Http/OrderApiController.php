@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * Adaptateur primaire de l'hexagone Order : il appelle les mêmes cas d'usage que OrderController (HTML),
  * seule la forme de la réponse change (JSON au lieu d'une redirection).
  */
-#[Route('/api/orders', name: 'api_orders_', format: 'json')]
+#[Route('/api/v1/orders', name: 'api_orders_', format: 'json')]
 final class OrderApiController extends AbstractController
 {
     // TODO: remplacer par l'utilisateur connecté quand l'authentification existera (comme OrderController)

@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 /**
  * API JSON du panier, appelée par assets/lib/cart.js. Chaque réponse renvoie le panier complet.
  */
-#[Route('/api/cart', name: 'api_cart_', format: 'json')]
+#[Route('/api/v1/cart', name: 'api_cart_', format: 'json')]
 final class CartApiController extends AbstractController
 {
     public function __construct(private readonly CartService $cartService)

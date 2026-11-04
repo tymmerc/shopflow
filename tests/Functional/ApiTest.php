@@ -43,7 +43,7 @@ final class ApiTest extends WebTestCase
 
     public function testProductsAreListedWithOutOfStockLast(): void
     {
-        $items = $this->get('/api/products')['items'];
+        $items = $this->get('/api/v1/products')['items'];
 
         $this->assertResponseIsSuccessful();
         $this->assertSame([$this->servoId, $this->sensorId], array_column($items, 'id'));
@@ -52,14 +52,14 @@ final class ApiTest extends WebTestCase
 
     public function testProductsCanBeFilteredByCategory(): void
     {
-        $items = $this->get('/api/products?category=Capteurs')['items'];
+        $items = $this->get('/api/v1/products?category=Capteurs')['items'];
 
         $this->assertSame([$this->sensorId], array_column($items, 'id'));
     }
 
     public function testAnUnknownCategoryIsABadRequest(): void
     {
-        $problem = $this->get('/api/products?category=Robots');
+        $problem = $this->get('/api/v1/products?category=Robots');
 
         $this->assertResponseStatusCodeSame(400);
         $this->assertSame('Catégorie inconnue « Robots ».', $problem['detail']);
@@ -67,7 +67,7 @@ final class ApiTest extends WebTestCase
 
     public function testAProductSheetHasItsTechnicalDetails(): void
     {
-        $product = $this->get('/api/products/' . $this->servoId);
+        $product = $this->get('/api/v1/products/' . $this->servoId);
 
         $this->assertResponseIsSuccessful();
         $this->assertSame('Servomoteur SG90 9 g', $product['name']);
@@ -76,7 +76,7 @@ final class ApiTest extends WebTestCase
 
     public function testAnUnknownProductIsNotFound(): void
     {
-        $problem = $this->get('/api/products/999999');
+        $problem = $this->get('/api/v1/products/999999');
 
         $this->assertResponseStatusCodeSame(404);
         $this->assertSame('Produit introuvable.', $problem['detail']);
@@ -84,16 +84,16 @@ final class ApiTest extends WebTestCase
 
     public function testAnOrderIsPlacedFromTheCartAndCanBeReadBack(): void
     {
-        $this->send('POST', '/api/cart/items/' . $this->servoId, ['quantity' => 2]);
-        $order = $this->send('POST', '/api/orders', []);
+        $this->send('POST', '/api/v1/cart/items/' . $this->servoId, ['quantity' => 2]);
+        $order = $this->send('POST', '/api/v1/orders', []);
 
         $this->assertResponseStatusCodeSame(201);
         $this->assertSame('pending_payment', $order['status']);
         $this->assertSame(6.4, $order['total']);
         $this->assertStringStartsWith('/payment/fake/', $order['paymentUrl']);
-        $this->assertResponseHeaderSame('Location', '/api/orders/' . $order['id']);
+        $this->assertResponseHeaderSame('Location', '/api/v1/orders/' . $order['id']);
 
-        $again = $this->get('/api/orders/' . $order['id']);
+        $again = $this->get('/api/v1/orders/' . $order['id']);
         $this->assertResponseIsSuccessful();
         $this->assertSame(2, $again['lines'][0]['quantity']);
         $this->assertArrayNotHasKey('paymentUrl', $again);
@@ -101,21 +101,21 @@ final class ApiTest extends WebTestCase
 
     public function testAnEmptyCartCannotBeOrdered(): void
     {
-        $this->send('POST', '/api/orders', []);
+        $this->send('POST', '/api/v1/orders', []);
 
         $this->assertResponseStatusCodeSame(422);
     }
 
     public function testPlacingAnOrderRequiresJson(): void
     {
-        $this->client->request('POST', '/api/orders', [], [], ['HTTP_ACCEPT' => 'application/json'], 'x');
+        $this->client->request('POST', '/api/v1/orders', [], [], ['HTTP_ACCEPT' => 'application/json'], 'x');
 
         $this->assertResponseStatusCodeSame(415);
     }
 
     public function testAnUnknownOrderIsNotFound(): void
     {
-        $this->get('/api/orders/999999');
+        $this->get('/api/v1/orders/999999');
 
         $this->assertResponseStatusCodeSame(404);
     }
