@@ -1,0 +1,211 @@
+# Contrat de l'API ShopFlow (jalon 5). Écrit AVANT le code : les routes se codent à partir d'ici.
+# Pour le lire joliment : coller ce fichier sur https://editor.swagger.io (Swagger UI viendra à l'étape 3).
+#
+# Comment avancer :
+#   1. GET /api/products est entièrement rempli : c'est le modèle à suivre.
+#   2. Les routes marquées « À FAIRE » sont à compléter sur le même schéma.
+#   3. Les erreurs utilisent toutes le même format (components/schemas/Problem), celui que Symfony renvoie déjà.
+
+openapi: 3.1.0
+
+info:
+  title: API ShopFlow
+  version: 0.1.0
+  description: |
+    API REST en JSON de la boutique ShopFlow (composants électroniques et robotique).
+    Utilisée par le front (fetch) et par l'appli mobile partenaire.
+
+servers:
+  - url: http://localhost:8000
+    description: Dev local (Docker Compose)
+
+tags:
+  - name: Produits
+  - name: Panier
+  - name: Commandes
+
+paths:
+
+  # ---------------------------------------------------------------- Produits
+
+  /api/products:
+    get:
+      tags: [Produits]
+      summary: Lister les produits
+      description: Les produits en rupture sont inclus (avec stock à 0), placés en fin de liste.
+      operationId: listProducts
+      parameters:
+        - name: category
+          in: query
+          required: false
+          description: Ne garder qu'une catégorie.
+          schema:
+            type: string
+            enum: [Cartes, Moteurs, Capteurs, Câblage, Outillage]
+        - name: level
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [Débutant, Intermédiaire, Confirmé]
+      responses:
+        '200':
+          description: La liste des produits (éventuellement vide).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductSummary'
+              example:
+                items:
+                  - id: 14
+                    name: Carte Arduino Uno R3 compatible
+                    category: Cartes
+                    level: Débutant
+                    price: 14.9
+                    stock: 42
+                    image: /images/products/arduino-uno-r3.jpg
+        '400':
+          description: Une catégorie ou un niveau qui n'existe pas.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: https://tools.ietf.org/html/rfc2616#section-10
+                title: An error occurred
+                status: 400
+                detail: Catégorie inconnue « Robots ».
+
+  /api/products/{id}:
+    get:
+      tags: [Produits]
+      summary: Voir un produit (fiche complète)
+      operationId: getProduct
+      # À FAIRE :
+      #  - le paramètre {id} (in: path, entier, obligatoire), sur le modèle des paramètres ci-dessus
+      #  - la réponse 200 : schéma ProductDetail (à écrire plus bas, il ajoute des champs à ProductSummary)
+      #  - la réponse 404 : le produit n'existe pas, au format Problem
+      responses:
+        '200':
+          description: À FAIRE
+
+  # ---------------------------------------------------------------- Panier
+  # Le panier existe déjà (CartApiController, fait par Nathan) : ici on DÉCRIT ce qu'il fait, sans le changer.
+  # Il est rattaché au visiteur par un cookie, donc pas d'{id} de panier dans l'adresse.
+
+  /api/cart:
+    get:
+      tags: [Panier]
+      summary: Voir le panier du visiteur
+      operationId: getCart
+      responses:
+        '200':
+          description: Le panier, vide s'il n'existe pas encore.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+    # À FAIRE : put (remplacer tout le panier) et delete (le vider).
+    #  Regarder CartApiController::replace() et ::clear() pour savoir ce qu'ils attendent et renvoient.
+    #  Erreurs possibles : 415 si le corps n'est pas du JSON, 422 si une quantité est invalide.
+
+  /api/cart/items/{id}:
+    # À FAIRE : post (ajouter), put (changer la quantité), delete (retirer).
+    #  Corps attendu pour post et put : { "quantity": 2 }
+    #  Erreurs : 404 produit inconnu, 415 pas du JSON, 422 quantité < 1 ou pas un entier.
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: L'id du produit.
+        schema:
+          type: integer
+
+  # ---------------------------------------------------------------- Commandes
+  # À FAIRE, à décider d'abord en équipe :
+  #  - POST /api/orders : passer commande à partir du panier. Que renvoie-t-on ? (201 + la commande créée ?)
+  #    Que se passe-t-il si le panier est vide (422 ?) ou si un produit n'a plus assez de stock (409 ?) ?
+  #  - GET /api/orders/{id} : voir une commande et son statut.
+
+components:
+  schemas:
+
+    ProductSummary:
+      description: Ce qu'il faut pour afficher une carte produit dans une liste.
+      type: object
+      required: [id, name, price, stock]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: [string, 'null']
+        level:
+          type: [string, 'null']
+          enum: [Débutant, Intermédiaire, Confirmé, null]
+        price:
+          type: number
+          description: Prix TTC en euros.
+        stock:
+          type: integer
+          minimum: 0
+        image:
+          type: [string, 'null']
+          description: Chemin de la photo, relatif au site.
+
+    # À FAIRE : ProductDetail = ProductSummary + tagline, description, solderingRequired,
+    #  specs (liste de [libellé, valeur]), compatibility, boxContents.
+    #  Astuce : allOf: [ { $ref: '#/components/schemas/ProductSummary' }, { type: object, properties: … } ]
+
+    CartLine:
+      type: object
+      required: [id, name, price, stock, url, qty]
+      properties:
+        id:
+          type: integer
+          description: L'id du produit.
+        name:
+          type: string
+        price:
+          type: number
+        stock:
+          type: integer
+        url:
+          type: string
+          description: Lien vers la fiche produit.
+        qty:
+          type: integer
+          minimum: 1
+
+    Cart:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartLine'
+
+    Problem:
+      description: |
+        Format commun de toutes les erreurs (RFC 7807), celui que Symfony renvoie déjà pour une route en JSON.
+        En dev, Symfony ajoute aussi « class » et « trace » pour déboguer : ils n'apparaissent pas en production.
+      type: object
+      required: [title, status]
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+          description: Le message lisible, en français.
