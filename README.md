@@ -37,6 +37,36 @@ Si un port est déjà pris : `HTTP_PORT=8080 MYSQL_PORT=3308 docker compose up -
 
 Stack : Symfony 7.4 (webapp), PHP 8.3 + Apache, MySQL 8.4, Mailpit. Déploiement : uniquement en local avec Docker Compose pour l'instant.
 
+### Paiement et e-mails en local
+
+Aucun vrai prestataire de paiement n'est branché : en dev, « Passer commande » mène à une page de paiement simulée (`/payment/fake/…`) avec les boutons Payer et Refuser. Elle n'existe pas en production.
+
+Les e-mails partent en file (Messenger) et sont envoyés par le service `worker`, puis arrivent dans Mailpit. Après une modification de `config/`, relancez-le : `docker compose restart worker`.
+
+## Tests
+
+La première fois, créez la base de test `shopflow_test` :
+
+```bash
+docker compose exec php php bin/console doctrine:database:create --env=test --if-not-exists
+docker compose exec php php bin/console doctrine:migrations:migrate --env=test -n
+```
+
+Si MySQL refuse l'accès à `shopflow_test` (volume créé avant `docker/mysql/init/01-grants.sql`), donnez le droit une fois :
+
+```bash
+docker compose exec database mysql -uroot -proot -e "GRANT ALL PRIVILEGES ON \`shopflow%\`.* TO 'app'@'%'"
+```
+
+Puis, à chaque fois :
+
+```bash
+docker compose exec php php bin/phpunit                  # tous les tests
+docker compose exec php php bin/phpunit tests/Functional # parcours de commande complet
+```
+
+Après une nouvelle migration, rejouez la commande `doctrine:migrations:migrate --env=test -n`.
+
 ## Jalon 1 : cadrer et modéliser
 
 - [Exigences fonctionnelles et non fonctionnelles](docs/exigences.md)

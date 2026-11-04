@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
+
+{% block title %}Paiement simulé{% endblock %}
+
+{% block body %}
+<div class="mx-auto max-w-md px-4 py-12">
+
+    <p class="mb-6 flex items-start gap-2 rounded-md bg-warning-bg p-3 text-[13px] text-warning" role="note">
+        {{ ui.icon('triangle-alert', 16, 'mt-0.5 shrink-0') }}
+        Paiement simulé (environnement de développement). Aucune carte n'est débitée.
+    </p>
+
+    <section class="panel flex flex-col gap-6 p-6" aria-labelledby="fake-payment-title">
+        <header class="flex items-center gap-3">
+            <span class="grid size-10 place-items-center rounded-md bg-subtle text-muted">{{ ui.icon('credit-card', 20) }}</span>
+            <div>
+                <h1 id="fake-payment-title" class="text-[18px] font-semibold">Faux PSP</h1>
+                <p class="font-mono text-[12px] text-fg-2">{{ payment.providerReference }}</p>
+            </div>
+        </header>
+
+        <dl class="flex items-baseline justify-between border-y border-line py-4">
+            <dt class="text-fg-2">Montant à payer</dt>
+            <dd class="tnum text-[24px] font-semibold">{{ (payment.amount / 100)|number_format(2, ',', ' ') }} €</dd>
+        </dl>
+
+        {% if payment.pending %}
+            <form method="post" action="{{ path('payment_fake_confirm', { reference: payment.providerReference }) }}" class="flex flex-col gap-3">
+                <input type="hidden" name="return" value="{{ return }}">
+                <button type="submit" name="decision" value="pay" class="btn btn-primary btn-lg w-full">
+                    {{ ui.icon('circle-check', 20) }}
+                    Payer
+                </button>
+                <button type="submit" name="decision" value="refuse" class="btn btn-secondary btn-lg w-full">
+                    {{ ui.icon('circle-alert', 20) }}
+                    Refuser le paiement
+                </button>
+            </form>
+            <a href="{{ return }}" class="self-center text-[13px] text-fg-2 hover:text-link">Abandonner et revenir à la boutique</a>
+        {% else %}
+            <p class="flex items-start gap-2 rounded-md bg-info-bg p-3 text-[13px] text-info">
+                {{ ui.icon('info', 16, 'mt-0.5 shrink-0') }}
+                Ce paiement a déjà été traité (statut : {{ payment.status.value }}).
+            </p>
+            <a href="{{ return }}" class="btn btn-primary w-full">
+                Revenir à la boutique
+                {{ ui.icon('arrow-right', 16) }}
+            </a>
+        {% endif %}
+    </section>
+
+</div>
+{% endblock %}
