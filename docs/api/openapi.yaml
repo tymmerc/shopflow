@@ -13,6 +13,7 @@ info:
   description: |
     API REST en JSON de la boutique ShopFlow (composants électroniques et robotique).
     Utilisée par le front (fetch) et par l'appli mobile partenaire.
+    Toutes les routes sont sous /api/v1 (voir ADR-006) : un changement qui casse le partenaire passera par une /api/v2.
 
 servers:
   - url: /
@@ -26,7 +27,7 @@ tags:
 paths:
   # ---------------------------------------------------------------- Produits
 
-  /api/products:
+  /api/v1/products:
     get:
       tags: [Produits]
       summary: Lister les produits
@@ -80,7 +81,7 @@ paths:
                 status: 400
                 detail: Catégorie inconnue « Robots ».
 
-  /api/products/{id}:
+  /api/v1/products/{id}:
     get:
       tags: [Produits]
       summary: Voir un produit (fiche complète)
@@ -116,7 +117,7 @@ paths:
   # Le panier existe déjà (CartApiController, fait par Nathan) : ici on DÉCRIT ce qu'il fait, sans le changer.
   # Il est rattaché au visiteur par un cookie, donc pas d'{id} de panier dans l'adresse.
 
-  /api/cart:
+  /api/v1/cart:
     get:
       tags: [Panier]
       summary: Voir le panier du visiteur
@@ -193,7 +194,7 @@ paths:
               example:
                 items: []
 
-  /api/cart/items/{id}:
+  /api/v1/cart/items/{id}:
     parameters:
       - name: id
         in: path
@@ -245,7 +246,7 @@ paths:
   # ---------------------------------------------------------------- Commandes
   # La commande se passe à partir du panier du visiteur (cookie) : pas besoin de renvoyer les produits.
 
-  /api/orders:
+  /api/v1/orders:
     post:
       tags: [Commandes]
       summary: Passer commande à partir du panier
@@ -268,7 +269,7 @@ paths:
             Location:
               schema:
                 type: string
-              example: /api/orders/2
+              example: /api/v1/orders/2
           content:
             application/json:
               schema:
@@ -303,7 +304,7 @@ paths:
                 title: An error occurred
                 detail: "Impossible de passer commande : le panier est vide."
 
-  /api/orders/{id}:
+  /api/v1/orders/{id}:
     get:
       tags: [Commandes]
       summary: Voir une commande et son statut

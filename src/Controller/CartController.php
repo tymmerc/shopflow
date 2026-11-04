@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class CartController extends AbstractController
 {
-    // Page seule : le contenu est chargé par assets/lib/cart.js depuis CartApiController (/api/cart)
+    // Page seule : le contenu est chargé par assets/lib/cart.js depuis CartApiController (/api/v1/cart)
     #[Route('/cart', name: 'app_cart')]
     public function index(): Response
     {

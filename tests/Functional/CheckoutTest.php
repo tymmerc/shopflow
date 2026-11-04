@@ -124,7 +124,7 @@ final class CheckoutTest extends WebTestCase
 
     private function addMugsToCart(int $quantity): void
     {
-        $this->client->jsonRequest('POST', "/api/cart/items/{$this->mugId}", ['quantity' => $quantity]);
+        $this->client->jsonRequest('POST', "/api/v1/cart/items/{$this->mugId}", ['quantity' => $quantity]);
         $this->assertResponseIsSuccessful();
     }
 
@@ -179,7 +179,7 @@ final class CheckoutTest extends WebTestCase
      */
     private function cartItems(): array
     {
-        $this->client->request('GET', '/api/cart');
+        $this->client->request('GET', '/api/v1/cart');
 
         return json_decode((string) $this->client->getResponse()->getContent(), true)['items'];
     }

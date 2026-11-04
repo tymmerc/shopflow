@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * API des produits, en lecture seule (contrat : docs/api/openapi.yaml, tag Produits).
  * format: 'json' fait renvoyer les erreurs au format Problem (RFC 7807) au lieu d'une page HTML.
  */
-#[Route('/api/products', name: 'api_products_', format: 'json')]
+#[Route('/api/v1/products', name: 'api_products_', format: 'json')]
 final class ProductApiController extends AbstractController
 {
     private const LEVELS = ['Débutant', 'Intermédiaire', 'Confirmé'];

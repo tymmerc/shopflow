@@ -1,10 +1,10 @@
-// Panier enregistré côté serveur (API /api/cart). L'état local change tout de suite pour que l'interface
+// Panier enregistré côté serveur (API /api/v1/cart). L'état local change tout de suite pour que l'interface
 // réagisse sans attendre, puis la requête part ; la réponse du serveur fait foi (prix, stock).
 // Chaque changement émet `cart:change` sur window ; les autres onglets suivent via BroadcastChannel.
 import { remove as forget } from './storage.js';
 import { toast } from './toast.js';
 
-const API = '/api/cart';
+const API = '/api/v1/cart';
 
 let state = [];
 let loaded = false;
