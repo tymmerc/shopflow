@@ -2,7 +2,7 @@
 
 namespace App\Catalog\Handler;
 
-use Command\Domain\Event\CommandePlaced;
+use Command\Domain\Event\CommandPlaced;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
