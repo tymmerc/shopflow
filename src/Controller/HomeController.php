@@ -15,6 +15,7 @@ final class HomeController extends AbstractController
     {
         return $this->render('home/index.html.twig', [
             'latest' => $catalogRepository->findLatest(4),
+            'categories' => $catalogRepository->countByCategory(),
         ]);
     }
 }

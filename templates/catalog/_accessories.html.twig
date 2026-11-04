@@ -1,0 +1,30 @@
+{#
+    « À prévoir aussi » : produits choisis à la main pour aller avec celui-ci (pas calculés à partir des commandes).
+    On coche ce qu'on veut, un seul bouton ajoute la sélection au panier.
+#}
+<section class="flex flex-col gap-3 border-t border-line pt-6"
+         aria-labelledby="accessories-title"
+         data-controller="bundle"
+         data-bundle-cart-url-value="{{ path('app_cart') }}">
+    <h2 id="accessories-title" class="section-label">À prévoir aussi</h2>
+    <ul class="flex flex-col divide-y divide-[var(--border)] rounded-md border border-line">
+        {% for item in accessories %}
+            <li>
+                <label class="flex cursor-pointer items-center gap-3 px-3 py-2 hover:bg-subtle">
+                    <input type="checkbox" class="size-4 cursor-pointer rounded accent-[var(--primary)]" checked
+                           data-bundle-target="item" data-action="bundle#update"
+                           data-id="{{ item.id }}" data-name="{{ item.name }}" data-price="{{ item.price }}"
+                           data-stock="{{ item.stock }}" data-url="{{ path('app_catalog_show', { id: item.id }) }}">
+                    {% if item.img %}
+                        <img src="{{ item.img }}" alt="" class="size-10 shrink-0 rounded-sm border border-line bg-white object-contain p-0.5" loading="lazy">
+                    {% endif %}
+                    <span class="min-w-0 flex-1 truncate text-[13px]">{{ item.name }}</span>
+                    <span class="tnum text-[13px] font-medium">{{ item.price|number_format(2, ',', ' ') }}&nbsp;€</span>
+                </label>
+            </li>
+        {% endfor %}
+    </ul>
+    <button type="button" class="btn btn-secondary self-start" data-bundle-target="button" data-action="bundle#add">
+        <span data-bundle-target="label">Ajouter la sélection</span>
+    </button>
+</section>

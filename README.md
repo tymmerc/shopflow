@@ -14,11 +14,36 @@ Projet fil rouge du module « Architecture des systèmes logiciels » (parcours 
 
 Il faut Docker (Docker Desktop sur Mac ou Windows).
 
+### Première fois
+
 ```bash
 docker compose up -d --build
+docker compose exec php php bin/console doctrine:migrations:migrate -n
+docker compose exec php php bin/console doctrine:fixtures:load -n
 ```
 
-- Site : http://localhost:8000 (page « Welcome to Symfony » tant qu'il n'y a pas de route)
+La 2e commande crée les tables, la 3e met les produits de démo (la boutique de robotique).
+
+### Après chaque `git pull` (à faire à chaque fois)
+
+Un `git pull` ne suffit pas : le code est copié dans l'image Docker, il faut la reconstruire, sinon vous voyez l'ancien site.
+
+```bash
+docker compose up -d --build
+docker compose exec php php bin/console doctrine:migrations:migrate -n
+```
+
+Si les produits ou les photos ont changé (vous voyez encore les anciens), rechargez les produits de démo. Attention, ça vide votre base locale (paniers et commandes de test compris) :
+
+```bash
+docker compose exec php php bin/console doctrine:fixtures:load -n
+```
+
+Puis rechargez la page sans cache : Ctrl+Shift+R (Cmd+Shift+R sur Mac).
+
+### Adresses
+
+- Site : http://localhost:8000
 - Mailpit, les mails envoyés par l'appli : http://localhost:8025
 - MySQL : port 3307 de la machine, base `shopflow`, utilisateur `app` / `app` (mots de passe de dev)
 

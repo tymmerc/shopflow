@@ -18,11 +18,13 @@
         data-name="{{ article.name }}"
         data-price="{{ article.price }}"
         data-stock="{{ article.stock }}"
-        data-search="{{ article.name }} {{ article.desc }}"
+        data-search="{{ article.name }} {{ article.category }} {{ article.tagline }} {{ article.desc }} {{ (article.compatibility ?? [])|join(' ') }}"
+        data-category="{{ article.category }}"
+        data-level="{{ article.level }}"
     {% endif %}>
     <a href="{{ url }}" class="product-media" tabindex="-1" aria-hidden="true">
         {% if article.img %}
-            <img src="{{ article.img }}" alt="" loading="lazy" decoding="async">
+            <img src="{{ article.img }}" alt="{{ article.name }}" loading="lazy" decoding="async" width="900" height="600">
         {% else %}
             {{ ui.icon('package', 32) }}
         {% endif %}
@@ -30,11 +32,18 @@
 
     <div class="product-body">
         <div class="product-info flex flex-col gap-1">
-            <h3 class="truncate text-[14px] font-semibold">
+            {% if article.category or article.level %}
+                <p class="product-meta">
+                    {%- if article.category %}<span>{{ article.category }}</span>{% endif -%}
+                    {%- if article.category and article.level %}<span aria-hidden="true">·</span>{% endif -%}
+                    {%- if article.level %}<span>{{ article.level }}</span>{% endif -%}
+                </p>
+            {% endif %}
+            <h3 class="product-name text-[14px] font-semibold">
                 <a href="{{ url }}" class="rounded-sm hover:text-link">{{ article.name }}</a>
             </h3>
-            {% if article.desc %}
-                <p class="product-desc text-[13px] text-fg-2">{{ article.desc }}</p>
+            {% if article.tagline or article.desc %}
+                <p class="product-desc text-[13px] text-fg-2">{{ article.tagline ?? article.desc }}</p>
             {% endif %}
         </div>
 
