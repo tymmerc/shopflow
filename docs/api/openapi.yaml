@@ -179,7 +179,20 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-    # À FAIRE : delete (vider le panier). Regarder CartApiController::clear().
+    delete:
+      tags: [Panier]
+      summary: Vider le panier
+      description: Rien à envoyer. Renvoie le panier, vide.
+      operationId: clearCart
+      responses:
+        "200":
+          description: Le panier vidé.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+              example:
+                items: []
 
   /api/cart/items/{id}:
     # À FAIRE : post (ajouter), put (changer la quantité), delete (retirer).
