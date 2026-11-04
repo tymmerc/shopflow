@@ -701,7 +701,13 @@
     .product-media img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
+        padding: 12px;
+    }
+    /* Photos produit sur fond blanc dans les deux thèmes : les images sont détourées sur blanc */
+    .product-media:has(img),
+    .product-photo:has(img) {
+        background: #FFFFFF;
     }
     @media (max-width: 639px) {
         .product-media {
@@ -734,6 +740,69 @@
         gap: 12px;
         margin-top: auto;
     }
+
+    .product-meta {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        color: var(--text-secondary);
+    }
+    .product-name {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Pastilles : filtres de catégorie (boutons) ou simples étiquettes (chip-static) */
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 30px;
+        padding: 0 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-full);
+        background: var(--bg-surface);
+        font-size: 13px;
+        color: var(--text-secondary);
+        transition: border-color var(--dur-fast) ease-out, color var(--dur-fast) ease-out;
+    }
+    button.chip { cursor: pointer; }
+    button.chip:hover { border-color: var(--border-strong); color: var(--text-primary); }
+    button.chip:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .chip[aria-pressed="true"] {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: var(--primary-contrast);
+    }
+    .chip-count {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        opacity: 0.7;
+    }
+    .chip-static { height: 26px; font-size: 12px; }
+
+    /* Fiche technique : libellé à gauche, valeur en mono avec unité */
+    .spec-table {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        font-size: 13px;
+    }
+    .spec-table > div {
+        display: grid;
+        grid-template-columns: minmax(140px, 40%) 1fr;
+        gap: 12px;
+        padding: 8px 12px;
+    }
+    .spec-table > div + div { border-top: 1px solid var(--border); }
+    .spec-table > div:nth-child(odd) { background: var(--bg-subtle); }
+    .spec-table dt { color: var(--text-secondary); }
+    .spec-table dd { font-family: var(--font-mono); font-size: 12px; }
 
     .product-grid[data-view="list"] {
         grid-template-columns: 1fr;

@@ -31,6 +31,21 @@
 </section>
 
 <div class="mx-auto flex max-w-6xl flex-col gap-12 px-4 py-12">
+    {% if categories %}
+        <section aria-labelledby="categories-title">
+            <h2 id="categories-title" class="section-label mb-4">Rayons</h2>
+            <ul class="flex flex-wrap gap-2">
+                {% for name, total in categories %}
+                    <li>
+                        <a href="{{ path('app_catalog', { categorie: name }) }}" class="chip">
+                            {{ name }} <span class="chip-count tnum">{{ total }}</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
     <section aria-labelledby="latest-title">
         <h2 id="latest-title" class="section-label mb-4">
             Nouveautés
