@@ -53,5 +53,12 @@
         <div id="toasts" class="toast-region" data-turbo-permanent
              data-controller="toast" data-action="toast:show@window->toast#show"
              role="region" aria-label="Notifications" aria-live="polite"></div>
+
+        {# Messages flash affichés en toasts (la zone #toasts est permanente, donc hors de ce bloc) #}
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div hidden data-controller="flash" data-flash-type-value="{{ type }}" data-flash-message-value="{{ message }}"></div>
+            {% endfor %}
+        {% endfor %}
     </body>
 </html>

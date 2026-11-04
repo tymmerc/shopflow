@@ -16,3 +16,11 @@ framework:
             Symfony\Component\Mailer\Messenger\SendEmailMessage: async
             Symfony\Component\Notifier\Message\ChatMessage: async
             Symfony\Component\Notifier\Message\SmsMessage: async
+
+# En test : les e-mails restent en mémoire (pas de worker, pas d'écriture dans messenger_messages)
+# et se vérifient avec assertQueuedEmailCount()
+when@test:
+    framework:
+        messenger:
+            transports:
+                async: 'in-memory://'

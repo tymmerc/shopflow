@@ -29,24 +29,37 @@ deptrac:
       collectors:
         - type: directory
           value: src/Notification/.*
+    # Noyau partagé (ports transverses comme EventPublisher), utilisable par tous les contextes
+    - name: Shared
+      collectors:
+        - type: directory
+          value: src/Shared/.*
 
   ruleset:
-    Catalog: []
+    Shared: []
+
+    Catalog:
+      - Shared
 
     Cart:
       - Catalog
+      - Shared
 
     Payment:
       - Cart
+      - Shared
 
     Order:
       - Catalog
       - Cart
       - Payment
+      - Shared
 
     Delivery:
       - Order
+      - Shared
 
     Notification:
       - Delivery
       - Order
+      - Shared

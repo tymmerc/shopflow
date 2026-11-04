@@ -13,6 +13,9 @@ services:
       - ./assets:/var/www/html/assets
       - ./config:/var/www/html/config
       - ./migrations:/var/www/html/migrations
+      # Tests : docker compose exec php php bin/phpunit
+      - ./tests:/var/www/html/tests
+      - ./phpunit.dist.xml:/var/www/html/phpunit.dist.xml
 
       - ./.env:/var/www/html/.env
 
@@ -22,7 +25,8 @@ services:
         condition: service_healthy
     mem_limit: 512m
 
-  
+  # Envoie les e-mails mis en file par Messenger (transport doctrine) : le paiement n'attend pas le serveur mail.
+  # Après une modification de config/ ou src/ qui touche l'envoi : docker compose restart worker
   worker:
     build:
       context: .

@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
+
+{% block title %}Commande n° {{ order.id }}{% endblock %}
+
+{% block body %}
+<div class="mx-auto max-w-2xl px-4 py-8">
+
+    {% set status = order.status.value %}
+    {% if status == 'paid' %}
+        <div class="mb-6 flex items-start gap-3 rounded-md bg-success-bg p-4 text-success" role="status">
+            {{ ui.icon('circle-check', 20, 'mt-0.5 shrink-0') }}
+            <div>
+                <h1 class="text-[18px] font-semibold">Merci, votre commande est confirmée</h1>
+                <p class="text-[13px]">Le paiement a été accepté. Un e-mail de confirmation vous a été envoyé.</p>
+            </div>
+        </div>
+    {% elseif status == 'payment_failed' %}
+        <div class="mb-6 flex items-start gap-3 rounded-md bg-danger-bg p-4 text-danger" role="alert">
+            {{ ui.icon('circle-alert', 20, 'mt-0.5 shrink-0') }}
+            <div>
+                <h1 class="text-[18px] font-semibold">Le paiement a été refusé</h1>
+                <p class="text-[13px]">Aucun montant n'a été débité. Votre panier est conservé, vous pouvez réessayer.</p>
+            </div>
+        </div>
+    {% elseif status == 'cancelled' %}
+        <div class="mb-6 flex items-start gap-3 rounded-md bg-warning-bg p-4 text-warning" role="alert">
+            {{ ui.icon('triangle-alert', 20, 'mt-0.5 shrink-0') }}
+            <div>
+                <h1 class="text-[18px] font-semibold">Commande annulée</h1>
+                <p class="text-[13px]">Un article a été épuisé pendant votre paiement. Votre panier est conservé ; le montant payé vous sera remboursé.</p>
+            </div>
+        </div>
+    {% else %}
+        <div class="mb-6 flex items-start gap-3 rounded-md bg-info-bg p-4 text-info" role="status">
+            {{ ui.icon('info', 20, 'mt-0.5 shrink-0') }}
+            <div>
+                <h1 class="text-[18px] font-semibold">Paiement en attente de confirmation</h1>
+                <p class="text-[13px]">Nous n'avons pas encore reçu la réponse du prestataire de paiement. Rechargez la page dans quelques instants.</p>
+            </div>
+        </div>
+    {% endif %}
+
+    <section aria-labelledby="order-title" class="panel overflow-hidden">
+        <div class="flex items-center justify-between border-b border-line bg-subtle px-4 py-2">
+            <h2 id="order-title" class="section-label">Commande n° {{ order.id }}</h2>
+            <span class="font-mono text-[12px] text-fg-2">{{ order.placedAt|date('d/m/Y H:i') }}</span>
+        </div>
+        <ul class="divide-y divide-line">
+            {% for line in order.lines %}
+                {% set article = articles[line.catalogId] ?? null %}
+                <li class="flex items-center gap-4 px-4 py-3">
+                    <span class="grid size-10 shrink-0 place-items-center rounded-sm border border-line bg-subtle text-muted">{{ ui.icon('package', 16) }}</span>
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate font-semibold">{{ article ? article.name : 'Article ' ~ line.catalogId }}</p>
+                        <p class="tnum text-[13px] text-fg-2">{{ line.quantity }} × {{ (line.unitPriceCents / 100)|number_format(2, ',', ' ') }} €</p>
+                    </div>
+                    <span class="tnum font-semibold">{{ (line.subtotalCents / 100)|number_format(2, ',', ' ') }} €</span>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="flex justify-between border-t border-line px-4 py-3 text-[16px] font-semibold">
+            <span>Total</span>
+            <span class="tnum">{{ (order.totalCents / 100)|number_format(2, ',', ' ') }} €</span>
+        </div>
+    </section>
+
+    <div class="mt-6 flex flex-wrap gap-3">
+        {% if status in ['payment_failed', 'cancelled'] %}
+            <a href="{{ path('app_cart') }}" class="btn btn-primary">{{ ui.icon('cart', 16) }} Revenir au panier</a>
+        {% endif %}
+        <a href="{{ path('app_catalog') }}" class="btn btn-secondary">Continuer mes achats {{ ui.icon('arrow-right', 16) }}</a>
+    </div>
+
+</div>
+{% endblock %}

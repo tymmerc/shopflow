@@ -7,7 +7,7 @@ import { toast } from '../lib/toast.js';
  * (le focus reste sur le bouton − / + utilisé). Suppression immédiate + toast « Annuler ».
  */
 export default class extends Controller {
-    static targets = ['loading', 'content', 'list', 'template', 'empty', 'count', 'subtotal', 'total'];
+    static targets = ['loading', 'content', 'list', 'template', 'empty', 'count', 'subtotal', 'total', 'checkout'];
 
     connect() {
         this.render = this.render.bind(this);
@@ -117,6 +117,14 @@ export default class extends Controller {
         toast(`« ${removed.item.name} » retiré du panier`, {
             actions: [{ label: 'Annuler', run: () => cart.restore(removed) }],
         });
+    }
+
+    // Attend que les derniers +/− soient enregistrés : la commande est créée à partir du panier en base
+    async checkout(event) {
+        event.preventDefault();
+        this.checkoutTarget.disabled = true;
+        await cart.synced();
+        event.target.submit();
     }
 
     clear() {
