@@ -25,7 +25,6 @@ tags:
   - name: Commandes
 
 paths:
-
   # ---------------------------------------------------------------- Produits
 
   /api/products:
@@ -49,7 +48,7 @@ paths:
             type: string
             enum: [Débutant, Intermédiaire, Confirmé]
       responses:
-        '200':
+        "200":
           description: La liste des produits (éventuellement vide).
           content:
             application/json:
@@ -60,7 +59,7 @@ paths:
                   items:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ProductSummary'
+                      $ref: "#/components/schemas/ProductSummary"
               example:
                 items:
                   - id: 14
@@ -70,12 +69,12 @@ paths:
                     price: 14.9
                     stock: 42
                     image: /images/products/arduino-uno-r3.jpg
-        '400':
+        "400":
           description: Une catégorie ou un niveau qui n'existe pas.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
               example:
                 type: https://tools.ietf.org/html/rfc2616#section-10
                 title: An error occurred
@@ -95,14 +94,19 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
-          description: Tiens ton produit !
-        '404':
+        "200":
+          description: Voici ton produit !
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetail"
+           
+        "404":
           description: Aucun produit qui possède cet identifiant :(
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
               example:
                 type: https://tools.ietf.org/html/rfc2616#section-10
                 title: An error occurred
@@ -119,12 +123,12 @@ paths:
       summary: Voir le panier du visiteur
       operationId: getCart
       responses:
-        '200':
+        "200":
           description: Le panier, vide s'il n'existe pas encore.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cart'
+                $ref: "#/components/schemas/Cart"
     # À FAIRE : put (remplacer tout le panier) et delete (le vider).
     #  Regarder CartApiController::replace() et ::clear() pour savoir ce qu'ils attendent et renvoient.
     #  Erreurs possibles : 415 si le corps n'est pas du JSON, 422 si une quantité est invalide.
@@ -149,7 +153,6 @@ paths:
 
 components:
   schemas:
-
     ProductSummary:
       description: Ce qu'il faut pour afficher une carte produit dans une liste.
       type: object
@@ -160,9 +163,9 @@ components:
         name:
           type: string
         category:
-          type: [string, 'null']
+          type: [string, "null"]
         level:
-          type: [string, 'null']
+          type: [string, "null"]
           enum: [Débutant, Intermédiaire, Confirmé, null]
         price:
           type: number
@@ -171,12 +174,47 @@ components:
           type: integer
           minimum: 0
         image:
-          type: [string, 'null']
+          type: [string, "null"]
           description: Chemin de la photo, relatif au site.
 
-    # À FAIRE : ProductDetail = ProductSummary + tagline, description, solderingRequired,
-    #  specs (liste de [libellé, valeur]), compatibility, boxContents.
-    #  Astuce : allOf: [ { $ref: '#/components/schemas/ProductSummary' }, { type: object, properties: … } ]
+    ProductDetail:
+      description: La fiche complète d'un produit = tout ProductSummary, plus les détails techniques.
+      allOf:
+        - $ref: "#/components/schemas/ProductSummary"
+        - type: object
+          properties:
+            tagline:
+              type: [string, "null"]
+              description: À quoi ça sert, en une phrase.
+            description:
+              type: [string, "null"]
+            solderingRequired:
+              type: [boolean, "null"]
+              description: Faut-il souder pour l'utiliser ?
+            specs:
+              type: array
+              description: Caractéristiques techniques, dans l'ordre d'affichage.
+              items:
+                type: array
+                description: Une paire [libellé, valeur avec unité].
+                prefixItems:
+                  - type: string
+                  - type: string
+                minItems: 2
+                maxItems: 2
+              example:
+                - [Tension de fonctionnement, 5 V]
+                - [Poids, 25 g]
+            compatibility:
+              type: array
+              items:
+                type: string
+              example: [Arduino Uno, ESP32]
+            boxContents:
+              type: array
+              description: Ce qui est livré dans la boîte.
+              items:
+                type: string
 
     CartLine:
       type: object
@@ -205,7 +243,7 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/CartLine'
+            $ref: "#/components/schemas/CartLine"
 
     Problem:
       description: |
