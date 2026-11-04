@@ -1,0 +1,82 @@
+[
+ {
+  "file": "arduino-uno-r3.jpg",
+  "title": "Arduino Uno board.jpg",
+  "author": "JrawX",
+  "license": "CC0",
+  "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "source": "https://commons.wikimedia.org/wiki/File:Arduino_Uno_board.jpg"
+ },
+ {
+  "file": "arduino-uno-r4-wifi.jpg",
+  "title": "Arduino UNO R4 WiFi.jpg",
+  "author": "Lomrjyo",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Arduino_UNO_R4_WiFi.jpg"
+ },
+ {
+  "file": "raspberry-pi-4.jpg",
+  "title": "Raspberry Pi 4 Model B - Top.jpg",
+  "author": "Laserlicht",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Raspberry_Pi_4_Model_B_-_Top.jpg"
+ },
+ {
+  "file": "esp32-wroom-32.jpg",
+  "title": "Espressif ESP-WROOM-32 Wi-Fi & Bluetooth Module.jpg",
+  "author": "Brian Krent",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Espressif_ESP-WROOM-32_Wi-Fi_%26_Bluetooth_Module.jpg"
+ },
+ {
+  "file": "servo-sg90.jpg",
+  "title": "Tower Pro SG90 micro servo motor.jpg",
+  "author": "Suyash Dwivedi",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Tower_Pro_SG90_micro_servo_motor.jpg"
+ },
+ {
+  "file": "nema-17.jpg",
+  "title": "Nema 17 Stepper Motor.jpg",
+  "author": "oomlout",
+  "license": "CC BY-SA 2.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Nema_17_Stepper_Motor.jpg"
+ },
+ {
+  "file": "hc-sr04.jpg",
+  "title": "HC SR04 Ultrasonic Module.jpg",
+  "author": "Suyash Dwivedi",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:HC_SR04_Ultrasonic_Module.jpg"
+ },
+ {
+  "file": "cables-dupont.jpg",
+  "title": "A few Jumper Wires.jpg",
+  "author": "oomlout",
+  "license": "CC BY-SA 2.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:A_few_Jumper_Wires.jpg"
+ },
+ {
+  "file": "cables-crocodile.jpg",
+  "title": "Jumper Wires with Crocodile Clips.jpg",
+  "author": "oomlout",
+  "license": "CC BY-SA 2.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Jumper_Wires_with_Crocodile_Clips.jpg"
+ },
+ {
+  "file": "fer-a-souder-sh72.jpg",
+  "title": "SH72 soldering iron with pen and ruler for scale.jpg",
+  "author": "Retired electrician",
+  "license": "CC0",
+  "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "source": "https://commons.wikimedia.org/wiki/File:SH72_soldering_iron_with_pen_and_ruler_for_scale.jpg"
+ }
+]

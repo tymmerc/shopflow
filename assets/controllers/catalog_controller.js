@@ -9,13 +9,17 @@ const normalize = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(
  * Tri, vue et « en stock » sont mémorisés ; la recherche vit dans l'URL (?q=) pour être partageable.
  */
 export default class extends Controller {
-    static targets = ['list', 'item', 'query', 'inStock', 'sort', 'view', 'count', 'empty', 'emptyQuery'];
+    static targets = ['list', 'item', 'query', 'inStock', 'sort', 'view', 'count', 'empty', 'emptyQuery', 'category', 'level'];
 
     connect() {
         const prefs = { ...DEFAULTS, ...load('catalog', {}) };
         this.view = prefs.view;
 
-        this.queryTarget.value = new URLSearchParams(window.location.search).get('q') ?? '';
+        const params = new URLSearchParams(window.location.search);
+        this.queryTarget.value = params.get('q') ?? '';
+        this.category = params.get('categorie') ?? '';
+        if (this.hasLevelTarget) this.levelTarget.value = params.get('niveau') ?? '';
+        this.renderCategories();
         this.inStockTarget.checked = prefs.inStock;
         if ([...this.sortTarget.options].some((o) => o.value === prefs.sort)) this.sortTarget.value = prefs.sort;
 
@@ -26,11 +30,14 @@ export default class extends Controller {
     apply() {
         const q = normalize(this.queryTarget.value);
         const inStock = this.inStockTarget.checked;
+        const level = this.hasLevelTarget ? this.levelTarget.value : '';
         let visible = 0;
 
         this.itemTargets.forEach((item) => {
             const match = (!q || normalize(item.dataset.search).includes(q))
-                && (!inStock || Number(item.dataset.stock) > 0);
+                && (!inStock || Number(item.dataset.stock) > 0)
+                && (!this.category || item.dataset.category === this.category)
+                && (!level || item.dataset.level === level);
             item.hidden = !match;
             if (match) visible++;
         });
@@ -39,7 +46,7 @@ export default class extends Controller {
         this.renderCount(visible);
         this.emptyTarget.hidden = visible > 0;
         this.listTarget.hidden = visible === 0;
-        this.emptyQueryTarget.textContent = this.describeFilters(q, inStock);
+        this.emptyQueryTarget.textContent = this.describeFilters(q, inStock, level);
 
         this.persist();
     }
@@ -52,7 +59,9 @@ export default class extends Controller {
             name: (a, b) => a.dataset.name.localeCompare(b.dataset.name, 'fr'),
         }[this.sortTarget.value] ?? (() => 0);
 
-        [...this.itemTargets].sort(by).forEach((item) => this.listTarget.append(item));
+        // Les articles en rupture restent visibles mais passent toujours en bas de la liste
+        const out = (item) => (Number(item.dataset.stock) > 0 ? 0 : 1);
+        [...this.itemTargets].sort((a, b) => out(a) - out(b) || by(a, b)).forEach((item) => this.listTarget.append(item));
     }
 
     renderCount(visible) {
@@ -61,9 +70,11 @@ export default class extends Controller {
         this.countTarget.textContent = visible === total ? plural(total) : `${visible} sur ${plural(total)}`;
     }
 
-    describeFilters(q, inStock) {
+    describeFilters(q, inStock, level) {
         const parts = [];
         if (q) parts.push(`« ${this.queryTarget.value.trim()} »`);
+        if (this.category) parts.push(`la catégorie ${this.category}`);
+        if (level) parts.push(`le niveau ${level}`);
         if (inStock) parts.push('en stock');
         return parts.length ? `Aucun article ne correspond à ${parts.join(' et ')}.` : 'Aucun article à afficher.';
     }
@@ -76,9 +87,24 @@ export default class extends Controller {
         }
     }
 
+    chooseCategory({ currentTarget }) {
+        this.category = currentTarget.dataset.value;
+        this.renderCategories();
+        this.apply();
+    }
+
+    renderCategories() {
+        this.categoryTargets.forEach((chip) => {
+            chip.setAttribute('aria-pressed', String(chip.dataset.value === this.category));
+        });
+    }
+
     reset() {
         this.queryTarget.value = '';
         this.inStockTarget.checked = false;
+        this.category = '';
+        this.renderCategories();
+        if (this.hasLevelTarget) this.levelTarget.value = '';
         this.apply();
         this.queryTarget.focus();
     }
@@ -103,11 +129,14 @@ export default class extends Controller {
 
         const url = new URL(window.location.href);
         const q = this.queryTarget.value.trim();
-        if (q) {
-            url.searchParams.set('q', q);
-        } else {
-            url.searchParams.delete('q');
-        }
+        const level = this.hasLevelTarget ? this.levelTarget.value : '';
+        [['q', q], ['categorie', this.category], ['niveau', level]].forEach(([key, value]) => {
+            if (value) {
+                url.searchParams.set(key, value);
+            } else {
+                url.searchParams.delete(key);
+            }
+        });
         if (url.href !== window.location.href) {
             window.history.replaceState(window.history.state, '', url);
         }

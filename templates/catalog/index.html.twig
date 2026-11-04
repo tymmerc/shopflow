@@ -9,7 +9,7 @@
     <header class="mb-6 flex flex-wrap items-end justify-between gap-2">
         <div>
             <h1 class="page-title">Catalogue</h1>
-            <p class="mt-1 text-[13px] text-fg-2">Composants électroniques et kits robotiques.</p>
+            <p class="mt-1 text-[13px] text-fg-2">Cartes, moteurs, capteurs et outillage pour construire vos robots.</p>
         </div>
     </header>
 
@@ -21,6 +21,20 @@
         </div>
     {% else %}
         <div data-controller="catalog">
+            {# Catégories : un clic filtre, le nombre vient de la base #}
+            <div class="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="Catégories">
+                <button type="button" class="chip" aria-pressed="true" data-value=""
+                        data-catalog-target="category" data-action="catalog#chooseCategory">
+                    Tout <span class="chip-count tnum">{{ articles|length }}</span>
+                </button>
+                {% for name, total in categories %}
+                    <button type="button" class="chip" aria-pressed="false" data-value="{{ name }}"
+                            data-catalog-target="category" data-action="catalog#chooseCategory">
+                        {{ name }} <span class="chip-count tnum">{{ total }}</span>
+                    </button>
+                {% endfor %}
+            </div>
+
             {# Barre de filtres : toujours accessible (§5.7) #}
             <div class="panel mb-3 flex flex-wrap items-center gap-3 p-3" role="search" aria-label="Filtrer le catalogue">
                 <div class="input-group min-w-[220px] flex-1">
@@ -39,6 +53,16 @@
                            data-catalog-target="inStock" data-action="catalog#apply">
                     En stock uniquement
                 </label>
+
+                <div class="flex items-center gap-2">
+                    <label for="catalog-level" class="text-[13px] text-fg-2">Niveau</label>
+                    <select id="catalog-level" class="input input-sm w-auto" data-catalog-target="level" data-action="catalog#apply">
+                        <option value="">Tous</option>
+                        {% for level in levels %}
+                            <option value="{{ level }}">{{ level }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
                 <div class="flex items-center gap-2">
                     <label for="catalog-sort" class="text-[13px] text-fg-2">Trier par</label>

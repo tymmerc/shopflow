@@ -13,14 +13,18 @@
             {{ ui.icon('arrow-left', 16) }}
             Catalogue
         </a>
+        {% if article.category %}
+            <span class="text-muted">{{ ui.icon('chevron-right', 16) }}</span>
+            <a href="{{ path('app_catalog', { categorie: article.category }) }}" class="link">{{ article.category }}</a>
+        {% endif %}
         <span class="text-muted">{{ ui.icon('chevron-right', 16) }}</span>
         <span class="truncate text-fg" aria-current="page">{{ article.name }}</span>
     </nav>
 
     <div class="grid gap-8 md:grid-cols-2">
-        <div class="panel grid aspect-square place-items-center overflow-hidden bg-subtle text-muted">
+        <div class="panel product-photo grid aspect-square place-items-center overflow-hidden text-muted md:sticky md:top-20 md:self-start">
             {% if article.img %}
-                <img src="{{ article.img }}" alt="{{ article.name }}" class="size-full object-cover">
+                <img src="{{ article.img }}" alt="{{ article.name }}" class="size-full object-contain p-6" width="900" height="600">
             {% else %}
                 <div class="flex flex-col items-center gap-2">
                     {{ ui.icon('package', 40) }}
@@ -38,14 +42,22 @@
              data-add-to-cart-url-value="{{ path('app_catalog_show', { id: article.id }) }}"
              data-add-to-cart-cart-url-value="{{ path('app_cart') }}">
             <div class="flex flex-col gap-3">
+                {% if article.level or article.solderingRequired is not null %}
+                    <p class="flex flex-wrap items-center gap-2">
+                        {% if article.level %}<span class="badge badge-neutral">Niveau {{ article.level|lower }}</span>{% endif %}
+                        {% if article.solderingRequired is not null %}
+                            <span class="badge badge-neutral">{{ article.solderingRequired ? 'Soudure nécessaire' : 'Sans soudure' }}</span>
+                        {% endif %}
+                    </p>
+                {% endif %}
                 <h1 class="page-title text-[24px]">{{ article.name }}</h1>
+                {% if article.tagline %}
+                    <p class="text-[15px] text-fg">{{ article.tagline }}</p>
+                {% endif %}
                 <div class="flex flex-wrap items-center gap-3">
                     <span class="tnum text-[24px] font-semibold">{{ article.price|number_format(2, ',', ' ') }}&nbsp;€</span>
                     {{ include('partials/_stock_badge.html.twig', { stock: article.stock }) }}
                 </div>
-                {% if article.desc %}
-                    <p class="max-w-[75ch] text-fg-2">{{ article.desc }}</p>
-                {% endif %}
             </div>
 
             <section class="flex flex-col gap-4">
@@ -87,16 +99,68 @@
                     </span>
                 </div>
 
-                <p class="field-help font-mono tnum">RÉF. SF-{{ '%05d'|format(article.id) }} · {{ article.stock }} en stock</p>
+                <p class="field-help font-mono tnum">RÉF. SF-{{ '%05d'|format(article.id) }} · {{ out ? 'réassort en cours' : article.stock ~ ' en stock, expédié sous 24 h ouvrées' }}</p>
+                <p class="text-[12px] text-fg-2">Paiement sécurisé · Expédition suivie · Confirmation par e-mail</p>
             </section>
 
-            <ul class="flex flex-col gap-3 border-t border-line pt-6 text-[13px] text-fg-2">
-                <li class="flex items-center gap-3">{{ ui.icon('shield-check', 20, 'text-fg') }} Paiement via un prestataire sécurisé</li>
-                <li class="flex items-center gap-3">{{ ui.icon('truck', 20, 'text-fg') }} Expédition suivie par transporteur</li>
-                <li class="flex items-center gap-3">{{ ui.icon('mail', 20, 'text-fg') }} Confirmation de commande par e-mail</li>
-            </ul>
+            {% if article.compatibility %}
+                <section class="flex flex-col gap-2">
+                    <h2 class="section-label">Compatible avec</h2>
+                    <ul class="flex flex-wrap gap-2">
+                        {% for item in article.compatibility %}
+                            <li class="chip chip-static">{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            {% if accessories %}
+                {{ include('catalog/_accessories.html.twig', { accessories: accessories }) }}
+            {% endif %}
+
         </div>
     </div>
+
+    <div class="mt-10 grid gap-8 md:grid-cols-2">
+        {% if article.specs %}
+            <section aria-labelledby="specs-title">
+                <h2 id="specs-title" class="section-label mb-3">Caractéristiques</h2>
+                <dl class="spec-table">
+                    {% for spec in article.specs %}
+                        <div><dt>{{ spec[0] }}</dt><dd>{{ spec[1] }}</dd></div>
+                    {% endfor %}
+                </dl>
+            </section>
+        {% endif %}
+
+        <div class="flex flex-col gap-8">
+            {% if article.desc %}
+                <section aria-labelledby="desc-title">
+                    <h2 id="desc-title" class="section-label mb-3">Description</h2>
+                    <p class="max-w-[75ch] text-fg-2">{{ article.desc }}</p>
+                </section>
+            {% endif %}
+            {% if article.boxContents %}
+                <section aria-labelledby="box-title">
+                    <h2 id="box-title" class="section-label mb-3">Dans la boîte</h2>
+                    <ul class="list-disc pl-5 text-fg-2">
+                        {% for item in article.boxContents %}<li>{{ item }}</li>{% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if related %}
+        <section class="mt-12" aria-labelledby="related-title">
+            <h2 id="related-title" class="section-label mb-4">Dans la même catégorie</h2>
+            <ul class="product-grid">
+                {% for item in related %}
+                    {{ include('partials/_product_card.html.twig', { article: item }) }}
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
 
 </div>
 {% endblock %}
