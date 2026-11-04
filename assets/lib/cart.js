@@ -74,6 +74,10 @@ function refresh() {
 channel?.addEventListener('message', ({ data }) => { if (pending === 0) receive(data); });
 refresh();
 
+// Turbo Drive ne réévalue pas ce module d'une page à l'autre : sans ça, un panier vidé côté serveur
+// (paiement réussi) resterait affiché jusqu'au prochain rechargement complet
+document.addEventListener('turbo:visit', refresh);
+
 // Se résout quand toutes les modifications en cours ont été envoyées au serveur
 export function synced() {
     return queue;
