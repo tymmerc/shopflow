@@ -129,9 +129,57 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Cart"
-    # À FAIRE : put (remplacer tout le panier) et delete (le vider).
-    #  Regarder CartApiController::replace() et ::clear() pour savoir ce qu'ils attendent et renvoient.
-    #  Erreurs possibles : 415 si le corps n'est pas du JSON, 422 si une quantité est invalide.
+    put:
+      tags: [Panier]
+      summary: Remplacer tout le panier
+      description: Sert à annuler « Vider le panier » en renvoyant l'ancienne liste.
+      operationId: replaceCart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [items]
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required: [id, quantity]
+                    properties:
+                      id:
+                        type: integer
+                        description: L'id du produit.
+                      quantity:
+                        type: integer
+                        minimum: 1
+            example:
+              items:
+                - id: 14
+                  quantity: 2
+                - id: 18
+                  quantity: 1
+      responses:
+        "200":
+          description: Le panier après remplacement.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "415":
+          description: Le corps de la requête n'est pas du JSON.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422":
+          description: Une ligne n'a pas d'id entier, ou une quantité est inférieure à 1.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    # À FAIRE : delete (vider le panier). Regarder CartApiController::clear().
 
   /api/cart/items/{id}:
     # À FAIRE : post (ajouter), put (changer la quantité), delete (retirer).
