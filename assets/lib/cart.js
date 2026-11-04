@@ -1,10 +1,10 @@
-// Panier enregistré côté serveur (API /api/cart). L'état local change tout de suite pour que l'interface
+// Panier enregistré côté serveur (API /api/v1/cart). L'état local change tout de suite pour que l'interface
 // réagisse sans attendre, puis la requête part ; la réponse du serveur fait foi (prix, stock).
 // Chaque changement émet `cart:change` sur window ; les autres onglets suivent via BroadcastChannel.
 import { remove as forget } from './storage.js';
 import { toast } from './toast.js';
 
-const API = '/api/cart';
+const API = '/api/v1/cart';
 
 let state = [];
 let loaded = false;
@@ -73,6 +73,10 @@ function refresh() {
 
 channel?.addEventListener('message', ({ data }) => { if (pending === 0) receive(data); });
 refresh();
+
+// Turbo Drive ne réévalue pas ce module d'une page à l'autre : sans ça, un panier vidé côté serveur
+// (paiement réussi) resterait affiché jusqu'au prochain rechargement complet
+document.addEventListener('turbo:visit', refresh);
 
 // Se résout quand toutes les modifications en cours ont été envoyées au serveur
 export function synced() {

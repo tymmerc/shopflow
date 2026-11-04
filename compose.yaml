@@ -16,8 +16,9 @@ services:
       # Tests : docker compose exec php php bin/phpunit
       - ./tests:/var/www/html/tests
       - ./phpunit.dist.xml:/var/www/html/phpunit.dist.xml
+      # Contrat de l'API, servi sur /api/docs : une modif se voit sans reconstruire
+      - ./docs/api:/var/www/html/docs/api
 
-      - ./.env:/var/www/html/.env
 
       - tailwind_build:/var/www/html/var/tailwind
     depends_on:
@@ -37,7 +38,6 @@ services:
     volumes:
       - ./src:/var/www/html/src
       - ./config:/var/www/html/config
-      - ./.env:/var/www/html/.env
     depends_on:
       database:
         condition: service_healthy

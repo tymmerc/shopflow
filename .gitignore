@@ -26,3 +26,30 @@ phpstan.neon
 ###> deptrac/deptrac ###
 /.deptrac.cache
 ###< deptrac/deptrac ###
+
+###> fichiers d'environnement ###
+# Le modèle à copier est .env.example. .env.test reste poussé (valeurs publiques de Symfony pour PHPUnit).
+/.env
+/.env.dev
+/.env.prod
+/.env.*.local
+###< fichiers d'environnement ###
+
+###> éditeurs et systèmes ###
+/.idea/
+/.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
+###< éditeurs et systèmes ###
+
+###> outils ###
+/node_modules/
+/coverage/
+/.phpunit.result.cache
+/.php-cs-fixer.cache
+/.deptrac.cache
+/compose.override.yaml
+*.log
+###< outils ###
