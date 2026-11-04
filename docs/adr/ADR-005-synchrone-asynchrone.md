@@ -8,8 +8,8 @@ Nous devons choisir ce qui reste synchrone et ce qui peut passer en asynchrone.
 
 ## Décision
 
-Nous avons décidé que la baisse du stock, la facture et le mail réagissent à l’événement OrderPlaced, en asynchrone, car personne n’a besoin d’avoir la réponse tout de suite.
-La confirmation du paiement et la vérification du stock avant le paiement restent synchrones, car le client a besoin de la réponse tout de suite.
+Nous avons décidé que le mail de confirmation (et plus tard la facture) part en asynchrone : quand la commande est payée, elle publie l’événement OrderPaid et le mail passe par la file de Messenger, car personne n’a besoin de la réponse tout de suite.
+La confirmation du paiement et la baisse du stock restent synchrones : le stock baisse au moment où le paiement est accepté, pour tous les articles en une fois, et la commande est annulée s’il en manque un. Le client a besoin de le savoir tout de suite.
 
 ## Conséquences
 
@@ -22,7 +22,7 @@ Négatives :
 
 - Un worker doit tourner en permanence pour traiter les messages.
 - Si un message est envoyé deux fois, il ne doit être traité qu’une fois.
-- Il faut mettre à jour le stock rapidement, pour éviter qu’un client commande un produit déjà en rupture mais pas encore mis à jour.
+- La baisse du stock se fait pendant la confirmation du paiement : si la base de données est lente, la confirmation l’est aussi.
 
 ## Statut
 
