@@ -7,11 +7,11 @@ use DateTimeImmutable;
 final class CommandPlaced
 {
     /**
-     * @param string[] $lignes
+     * @param string[] $lines
      */
     public function __construct(
-        public readonly string $commandeId,
-        public readonly array $lignes,
-        public readonly DateTimeImmutable $passeeLe,
+        public readonly string $commandId,
+        public readonly array $lines,
+        public readonly DateTimeImmutable $placedAt,
     ) {}
 }
