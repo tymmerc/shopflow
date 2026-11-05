@@ -35,6 +35,8 @@ services:
         condition: service_healthy
       mailer:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
     extra_hosts:
       - "host.docker.internal:host-gateway"
     mem_limit: 256m
@@ -91,6 +93,24 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
     mem_limit: 128m
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "127.0.0.1:${RABBITMQ_PORT:-5672}:5672"
+      - "127.0.0.1:${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    mem_limit: 512m
+
 volumes:
   database_data:
   tailwind_build:
+  rabbitmq_data:
